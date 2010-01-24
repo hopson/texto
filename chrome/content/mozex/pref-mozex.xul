@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<!--
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "License"); you may not use this file
+except in compliance with the License. You may obtain a copy of
+the License at http://www.mozilla.org/MPL/
+
+Software distributed under the License is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the License for the specific language governing
+rights and limitations under the License.
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License Version 2 or later (the
+"GPL"), in which case the provisions of the GPL are applicable 
+instead of those above.
+
+Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
+-->
+
+<?xml-stylesheet href="chrome://global/skin/"?>
+<?xul-overlay href="chrome://mozex/content/communicatorOverlay.xul"?>
+<?xul-overlay href="chrome://mozex/content/platformPrefOverlay.xul"?>
+
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    id="pref-mozex"
+    onload="initMozexPrefPanel(document.getElementById('mozex.command.defaults'));"
+    title="mozex preferences"
+    >
+
+    <script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
+
+    <groupbox id="mozex.command.defaults">
+        <caption label="Global Settings"/>
+        <grid>
+            <columns>
+                <column flex="1" />
+                <column flex="3" />
+            </columns>
+            <rows>
+                <row>
+                    <label value="Default Editor:" />
+					<hbox><textbox id="mozex.default.editor" flex="19" /><button id="mozex.default.editorbrowse" flex="1" label="Open..." /></hbox>
+                </row>
+				<row>
+                    <label value="Default Arguments:" />
+                    <textbox id="mozex.default.args" />
+                </row>
+				<row>
+					<label value="" />
+					<description>Filename: %t
+					</description>
+				</row>
+				<row>
+					<label value="Globally Enabled" />
+					<checkbox id="mozex.default.enabled" />
+				</row>
+
+            </rows>
+    </grid>
+    </groupbox>
+
+	<groupbox id="mozex.commands.domainopts">
+		<caption label="Domain Specific Options"/>
+
+		<grid>
+			<columns>
+				<column />
+				<column />
+			</columns>
+			<rows>
+				<row>
+					<vbox flex="1">
+						<box>
+							<textbox value="New Domain" id="mozex.domain.new" flex="15" size="18" />
+							<button id="mozex.domain.add" flex="1" label="Add" />
+						</box>
+						<listbox id="mozex.domain.list" rows="8" sortDirection="ascending">
+							<listitem label="No domains" disabled="true" />
+						</listbox>
+					</vbox>
+					<vbox flex="1">
+						<spacer flex="1" />
+						<grid>
+							<columns><column /><column /></columns>
+							<rows>
+								<row><label value="Domain" /><textbox id="mozexOptDomain" readonly="true" /></row>
+								<row><label value="Executable" /><hbox><textbox id="mozexOptEditor" flex="50"/><button id="mozex.domain.editorbrowse" flex="1" label="Open..." /></hbox></row>
+
+								<row><label value="Args" /><textbox id="mozexOptArgs" /></row>
+								<row><label value="Selector" /><textbox id="mozexOptAuto" /></row>
+								<row><label value="Enabled" /><checkbox id="mozexOptEnabled" /></row>
+								<row><hbox /><hbox><button id="mozexOptSave" label="Save" disabled="true" /><button id="mozexOptDelete" label="Delete" disabled="true" /></hbox></row>
+							</rows>
+						</grid>
+					</vbox>
+				</row>
+			</rows>
+		</grid>
+
+	</groupbox>
+
+</dialog>
+

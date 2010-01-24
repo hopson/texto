@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+The contents of this file are subject to the Mozilla Public
+License Version 1.1 (the "License"); you may not use this file
+except in compliance with the License. You may obtain a copy of
+the License at http://www.mozilla.org/MPL/
+
+Software distributed under the License is distributed on an "AS
+IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+implied. See the License for the specific language governing
+rights and limitations under the License.
+
+Alternatively, the contents of this file may be used under the
+terms of the GNU General Public License Version 2 or later (the
+"GPL"), in which case the provisions of the GPL are applicable 
+instead of those above.
+
+Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
+-->
+
+<overlay id="mozex"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+    <script type="application/x-javascript" src="md5.js"/>
+    <script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
+    <script type="application/x-javascript" src="mozex.js"/>
+	<script type="application/x-javascript">
+	<![CDATA[
+	function check_edit(doc){
+		var l = doc.location;
+		var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
+		getDomainPrefStr(url, 'mozex', function(jsonStr){ make_edit(jsonStr, doc); });
+	}
+
+	function make_edit(jsonPrefStr, doc){
+		var prefs = JSON.parse(jsonPrefStr);
+		if( !mozexReadPref("default.enabled") && (typeof(prefs.mozexOptEnabled) == "undefined" || !prefs.mozexOptEnabled)) { return; }
+
+		hotKeyed = 0;
+		if(!prefs.mozexOptEditor){ prefs.mozexOptEditor = mozexReadPref("default.editor"); }
+		if(!prefs.mozexOptArgs){ prefs.mozexOptArgs = mozexReadPref("default.args"); }
+
+		// automatically quote executables with spaces in the name:
+		if(prefs.mozexOptEditor.indexOf(" ") != -1){
+			prefs.mozexOptEditor = "\"" + prefs.mozexOptEditor + "\"";
+		}
+
+		var nodes;
+		if(prefs.mozexOptAuto){
+			nodes = doc.querySelectorAll(prefs.mozexOptAuto);
+		} else {
+			nodes = doc.querySelectorAll('textarea');
+		}
+		for(var i = 0; i < nodes.length; i++){
+			mozex_add_edit_button(nodes[i], prefs);
+		}
+	}
+
+	var b = getBrowser();
+	if(b.tabContainer){
+		for(var i = 0; i < b.tabContainer.itemCount; i++){
+			var t = b.tabContainer.getItemAtIndex(i);
+			t.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true);
+			}
+	}
+	b.addEventListener('TabOpen', function(e){ e.originalTarget.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true); return true; }, true);
+
+	]]>
+	</script>
+</overlay>
+
