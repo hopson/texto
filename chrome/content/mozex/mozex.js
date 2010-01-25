@@ -1,4 +1,6 @@
 /*
+vim:set ts=4 sw=4 sts=4 expandtab:
+
 The contents of this file are subject to the Mozilla Public
 License Version 1.1 (the "License"); you may not use this file
 except in compliance with the License. You may obtain a copy of
@@ -36,7 +38,7 @@ function mozexGetPrefTmpdir() {
     if (dir == null || dir.length == 0) {
         dir = mozex_default_tmpdir;
     }
-    
+
     if (! mozexExistsFile(dir)) {
         mozexError("temporary directory '" + dir + "' does not exist");
         return null;
@@ -86,19 +88,19 @@ function mozexTmpFilenameSource(url) {
 function mozexHandleMouseDown(evt) {
     var elem_type = null;
     var link_type = null;
-	for(var node = evt.originalTarget; node != null; node = node.parentNode) {
-		if(node.nodeType == Node.ELEMENT_NODE) {
-			elem_type = node.localName.toUpperCase();
-			if (elem_type == "TEXTAREA") {
-				if (evt.button == 0 && 
-						mozexExistsFile(mozexTmpFilenameTextarea(node))) {
-					mozexFillTextarea(node, true);
-					return false;
-				}
-				break;
-			}
-		}
-	}
+    for(var node = evt.originalTarget; node != null; node = node.parentNode) {
+        if(node.nodeType == Node.ELEMENT_NODE) {
+            elem_type = node.localName.toUpperCase();
+            if (elem_type == "TEXTAREA") {
+                if (evt.button == 0 && 
+                        mozexExistsFile(mozexTmpFilenameTextarea(node))) {
+                    mozexFillTextarea(node, true);
+                    return false;
+                }
+                break;
+            }
+        }
+    }
 }
 
 function mozexPurgeTmpdir() {
@@ -162,7 +164,7 @@ function mozexRunProgram(context, cmd, esc) {
         mozexError(context + ": no executable in command");
         return false;
     }
-    
+
     for (var i = 0; i < scmd.length; i++) {
         var param = scmd[i];
         var buf = "";
@@ -214,44 +216,42 @@ function mozexRunProgram(context, cmd, esc) {
                 mozexError(context + ": executable '" + executable + "' does not exist.");
                 return false;
             } else if (window.navigator.platform.toLowerCase().indexOf("mac") != -1) {
-				// on a mac, we might need to check inside .app bundles
-				// Look for the Info.plist file:
-				if(exec.isDirectory()){
-					var plist = Components.classes["@mozilla.org/file/local;1"].
-						createInstance(Components.interfaces.nsILocalFile);
-					plist_path = executable + mozex_dir_separator + 'Contents' +
-							mozex_dir_separator + 'Info.plist';
-					plist.initWithPath(plist_path);
-					if(plist.exists() && plist.isFile()){
-						// then we need to parse the plist file for executable name
-						var req = new XMLHttpRequest();
-						req.open("GET", "file://" + plist_path, false);
-						req.send(null);
-						var dom = req.responseXML;
-						var keyNodes = dom.querySelectorAll('plist>dict>key');
-						for(var i = 0; i < keyNodes.length; i++){
-							if(keyNodes[i].firstChild
-									&& keyNodes[i].firstChild.nodeType == Node.TEXT_NODE
-									&& keyNodes[i].firstChild.wholeText == "CFBundleExecutable") {
-								// then get the value:
-								nextNode = keyNodes[i].nextSibling;
-								// skip nuisance text nodes in between
-								while(nextNode.nodeType == Node.TEXT_NODE){ nextNode = nextNode.nextSibling; }
-								if(nextNode.tagName == "string"){
-									executable = executable + mozex_dir_separator + 'Contents' +
-										mozex_dir_separator + 'MacOS' + mozex_dir_separator +
-										nextNode.firstChild.wholeText;
-									exec.initWithPath(executable);
-									
-								}
-								break;
-							}
-						}
-					}
-				}
-			}
-        } 
-        else {
+                // on a mac, we might need to check inside .app bundles
+                // Look for the Info.plist file:
+                if(exec.isDirectory()){
+                    var plist = Components.classes["@mozilla.org/file/local;1"].
+                        createInstance(Components.interfaces.nsILocalFile);
+                    plist_path = executable + mozex_dir_separator + 'Contents' +
+                        mozex_dir_separator + 'Info.plist';
+                    plist.initWithPath(plist_path);
+                    if(plist.exists() && plist.isFile()){
+                        // then we need to parse the plist file for executable name
+                        var req = new XMLHttpRequest();
+                        req.open("GET", "file://" + plist_path, false);
+                        req.send(null);
+                        var dom = req.responseXML;
+                        var keyNodes = dom.querySelectorAll('plist>dict>key');
+                        for(var i = 0; i < keyNodes.length; i++){
+                            if(keyNodes[i].firstChild
+                                    && keyNodes[i].firstChild.nodeType == Node.TEXT_NODE
+                                    && keyNodes[i].firstChild.wholeText == "CFBundleExecutable") {
+                                // then get the value:
+                                nextNode = keyNodes[i].nextSibling;
+                                // skip nuisance text nodes in between
+                                while(nextNode.nodeType == Node.TEXT_NODE){ nextNode = nextNode.nextSibling; }
+                                if(nextNode.tagName == "string"){
+                                    executable = executable + mozex_dir_separator + 'Contents' +
+                                        mozex_dir_separator + 'MacOS' + mozex_dir_separator +
+                                        nextNode.firstChild.wholeText;
+                                    exec.initWithPath(executable);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
             var found = false;
             for (i = 0; i < path.length; i++) {
                 exec.initWithPath(path[i]);
@@ -269,9 +269,35 @@ function mozexRunProgram(context, cmd, esc) {
 
         pr.init(exec);
         pr.run(true, args, args.length);
+
+        /* Notes
+         * As of FF 3.6, this (runAsync) actually works correctly. Yay!
+         * However, I need to really put in some thought on how to make it work.
+         * Most GUI apps don't actually start up a second instance,
+         * so waiting for an exit doesn't work.  :. it's commented out for now.
+         */
+
+        /*
+        // Create an observer:
+        observer = {
+            observe: function(subject, topic, data){ alert('observer!' + topic); },
+            register: function() {
+                var observerService = Components.classes["@mozilla.org/observer-service;1"]
+                    .getService(Components.interfaces.nsIObserverService);
+                observerService.addObserver(this, "myTopicID", false);
+            },
+            unregister: function(){
+                var observerService = Components.classes["@mozilla.org/observer-service;1"]
+                    .getService(Components.interfaces.nsIObserverService);
+                observerService.removeObserver(this, "myTopicID");
+
+            }
+        }
+        pr.runAsync(args, args.length, observer);
+        */
     }
     catch (e) {
-        mozexError(context + ": cannot run executable '" + 
+        mozexError(context + ": cannot run executable '" +
                    executable + "' (args: " + args + "): " + e);
         return false;
     }
@@ -279,30 +305,30 @@ function mozexRunProgram(context, cmd, esc) {
 }
 
 function hopsonRulez(event, prefs) {
-	//var node = this.previousSibling;
-	if(event.target.tagName == "IMG"){
-		var target = event.target.parentNode;
-	} else {
-		var target = event.target;
-	}
-	var node = target.nextSibling;
+    //var node = this.previousSibling;
+    if(event.target.tagName == "IMG"){
+        var target = event.target.parentNode;
+    } else {
+        var target = event.target;
+    }
+    var node = target.nextSibling;
 
-	node.setAttribute('mozex-obg', node.style.background);
-	node.style.background = 'url(chrome://mozex/content/mozex-master-bg.png) gray no-repeat center';
-	target.firstChild.setAttribute('src',"chrome://mozex/content/mozex-edit.png");
-	target.firstChild.setAttribute('alt',"There are Mozex edits pending on this textarea");
-	target.firstChild.setAttribute('title',"There are Mozex edits pending on this textarea");
-	node.focus();
-	mozexEditTextarea(node, prefs);
-	node.addEventListener('focus', mozexUpdateTextarea, false);
-	node.addEventListener('click', mozexHandleMouseDown, false);
-	if(event.preventDefault){ event.preventDefault(); }
-	return false;
+    node.setAttribute('mozex-obg', node.style.background);
+    node.style.background = 'url(chrome://mozex/content/mozex-master-bg.png) gray no-repeat center';
+    target.firstChild.setAttribute('src',"chrome://mozex/content/mozex-edit.png");
+    target.firstChild.setAttribute('alt',"There are Mozex edits pending on this textarea");
+    target.firstChild.setAttribute('title',"There are Mozex edits pending on this textarea");
+    node.focus();
+    mozexEditTextarea(node, prefs);
+    node.addEventListener('focus', mozexUpdateTextarea, false);
+    node.addEventListener('click', mozexHandleMouseDown, false);
+    if(event.preventDefault){ event.preventDefault(); }
+    return false;
 }
 
 function mozexEditTextarea(node, prefs) {
     mozexPurgeTmpdir();
-    
+
     var tmpfile = mozexTmpFilenameTextarea(node);
     if (! tmpfile) {
         return;
@@ -335,51 +361,50 @@ function mozexEditTextarea(node, prefs) {
 }
 
 function mozexUpdateTextarea(event) {
-	mozexFillTextarea(event.target, false);
-	if(event.preventDefault){ event.preventDefault(); }
-	return false;
-
+    mozexFillTextarea(event.target, false);
+    if(event.preventDefault){ event.preventDefault(); }
+    return false;
 }
 
 function mozexFillTextarea(node, delFile) {
     var tmpfile = mozexTmpFilenameTextarea(node);
     if (delFile ) {
-		if(! tmpfile) {
-			alert("FillTextarea No tempfile: "+tmpfile);
-			return false;
-		}
-		node.removeEventListener('focus', mozexUpdateTextarea, false);
-		node.removeEventListener('click', mozexHandleMouseDown, false);
+        if(! tmpfile) {
+            alert("FillTextarea No tempfile: "+tmpfile);
+            return false;
+        }
+        node.removeEventListener('focus', mozexUpdateTextarea, false);
+        node.removeEventListener('click', mozexHandleMouseDown, false);
     }
 
     if (node && mozexExistsFile(tmpfile)) {
         var data = mozexReadFile(tmpfile);
         if (data != null) {
             node.value = data;
-			if(delFile){ 
-				mozexDeleteFile(tmpfile);
-				/* update the image to show we're not longer editing */
-				var sib = node.previousSibling;
-				if(sib != null && sib.hasAttribute('mozex') && sib.hasChildNodes()) {
-					sib.firstChild.setAttribute('src',"chrome://mozex/content/mozex-open.png");
-					sib.firstChild.setAttribute('alt',"Click to edit");
-					sib.firstChild.setAttribute('title',"Click to edit");
+            if(delFile){
+                mozexDeleteFile(tmpfile);
+                /* update the image to show we're not longer editing */
+                var sib = node.previousSibling;
+                if(sib != null && sib.hasAttribute('mozex') && sib.hasChildNodes()) {
+                    sib.firstChild.setAttribute('src',"chrome://mozex/content/mozex-open.png");
+                    sib.firstChild.setAttribute('alt',"Click to edit");
+                    sib.firstChild.setAttribute('title',"Click to edit");
 
-					if(node.hasAttribute('mozex-obg')) {
-						node.style.background = node.getAttribute('mozex-obg');
-						node.removeAttribute('mozex-obg');
-					}
-				}
-			}
+                    if(node.hasAttribute('mozex-obg')) {
+                        node.style.background = node.getAttribute('mozex-obg');
+                        node.removeAttribute('mozex-obg');
+                    }
+                }
+            }
         }
-		return true;
-    } else { 
-		//node.removeEventListener('focus', mozexFillTextarea, false);
-		node.removeEventListener('focus', mozexUpdateTextarea, false);
-		node.removeEventListener('click', mozexHandleMouseDown, false);
+        return true;
+    } else {
+        //node.removeEventListener('focus', mozexFillTextarea, false);
+        node.removeEventListener('focus', mozexUpdateTextarea, false);
+        node.removeEventListener('click', mozexHandleMouseDown, false);
 
-		return false; 
-	}
+        return false;
+    }
 }
 
 function mozexReadDir(dirname) {
@@ -428,7 +453,7 @@ function mozexWriteFile(data, filename) {
             mozexError("cannot create temporary file '" + filename + "': " + e); 
             return false;
         }
-       
+
         var stream = Components.classes["@mozilla.org/network/file-output-stream;1"].
                      createInstance(Components.interfaces.nsIFileOutputStream);
         var PR_WRONLY = 0x02;
@@ -447,7 +472,7 @@ function mozexWriteFile(data, filename) {
 function mozexReadFile(filename) {
     var MODE_RDONLY = 0x01;
     var PERM_IRUSR = 00400;
-    
+
     try {
         var file = Components.classes["@mozilla.org/file/local;1"].
                    createInstance(Components.interfaces.nsILocalFile);
@@ -481,42 +506,42 @@ function mozexError(msg) {
 
 function mozex_add_edit_button(node, prefs) {
 
-	var sib = node.nextSibling;
-	if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('mozex')) {
-		var newNode = window.content.document.createElement('a');
+    var sib = node.nextSibling;
+    if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('mozex')) {
+        var newNode = window.content.document.createElement('a');
 
-		newNode.addEventListener("click", function(e){ return hopsonRulez(e, prefs); }, true);
+        newNode.addEventListener("click", function(e){ return hopsonRulez(e, prefs); }, true);
 
-		if(!hotKeyed){
-			newNode.setAttribute('accesskey', 'o');
-			hotKeyed++;
-		}
-		newNode.setAttribute('mozex',true);
-		newNode.setAttribute('href','#');
-		newNode.setAttribute('src','chrome://mozex/content/mozex-open.png');
-		newNode.setAttribute('alt','Click to edit');
-		newNode.setAttribute('title','Click to edit');
-		newNode.setAttribute('style','display:inline-block; border:solid 1px #666; padding: 2px 4px; margin-top: 4px; background: #888; opacity: 0.5; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 18) );
-		//newNode.style.left = node.clientWidth - 18;
-		newNode.addEventListener('mouseover', function(e){ this.style.opacity = 1.0; return true; }, true);
-		newNode.addEventListener('mouseout', function(e){ this.style.opacity = 0.5; return true; }, true);
+        if(!hotKeyed){
+            newNode.setAttribute('accesskey', 'o');
+            hotKeyed++;
+        }
+        newNode.setAttribute('mozex',true);
+        newNode.setAttribute('href','#');
+        newNode.setAttribute('src','chrome://mozex/content/mozex-open.png');
+        newNode.setAttribute('alt','Click to edit');
+        newNode.setAttribute('title','Click to edit');
+        newNode.setAttribute('style','display:inline-block; border:solid 1px #666; padding: 2px 4px; margin-top: 4px; background: #888; opacity: 0.5; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 18) );
+        //newNode.style.left = node.clientWidth - 18;
+        newNode.addEventListener('mouseover', function(e){ this.style.opacity = 1.0; return true; }, true);
+        newNode.addEventListener('mouseout', function(e){ this.style.opacity = 0.5; return true; }, true);
 
-		var newContents = window.content.document.createElement('img');
-		newContents.setAttribute('src','chrome://mozex/content/mozex-open.png');
-		newContents.setAttribute('alt','Click to edit');
-		newContents.setAttribute('title','Click to edit');
-		newContents.setAttribute('style','border:none;');
-		newNode.appendChild(newContents);
-		node.parentNode.insertBefore(newNode, node);
-		/*
-		if(node.nextSibling) {
-			// then add the image as a previous of the next node
-			node.parentNode.insertBefore(newNode, node);
-		} else { // just append the node
-			node.parentNode.appendChild(newNode);
-		}
-		*/
-	}
+        var newContents = window.content.document.createElement('img');
+        newContents.setAttribute('src','chrome://mozex/content/mozex-open.png');
+        newContents.setAttribute('alt','Click to edit');
+        newContents.setAttribute('title','Click to edit');
+        newContents.setAttribute('style','border:none;');
+        newNode.appendChild(newContents);
+        node.parentNode.insertBefore(newNode, node);
+        /*
+           if(node.nextSibling) {
+        // then add the image as a previous of the next node
+        node.parentNode.insertBefore(newNode, node);
+        } else { // just append the node
+        node.parentNode.appendChild(newNode);
+        }
+        */
+    }
 }
 
 /* Run run run */
