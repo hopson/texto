@@ -128,7 +128,7 @@ function mozex_unescape(str) {
     return buf;
 }
 
-function mozexRunProgram(context, cmd, esc) {
+function mozexRunProgram(context, cmd, esc, node) {
     if (cmd == null) {
         return false; // no command is set
     }
@@ -178,12 +178,10 @@ function mozexRunProgram(context, cmd, esc) {
                 if (esc[a] === undefined) {
                     mozexError(context + ": unknown escape in command '" + cmd + "': %" + a);
                     return false;
-                }
-                else {
+                } else {
                     buf += esc[a];
                 }
-            }
-            else {
+            } else {
                 buf += c;
             }
         }
@@ -201,8 +199,7 @@ function mozexRunProgram(context, cmd, esc) {
         if (mozex_os == 'unix') {
             try {
                 path = pr.getEnvironment("PATH").split(":");
-            } 
-            catch (e) {
+            } catch (e) {
                 // do nothing
             }
         }
@@ -268,7 +265,8 @@ function mozexRunProgram(context, cmd, esc) {
         }
 
         pr.init(exec);
-        pr.run(true, args, args.length);
+        // @todo Commented out for development:
+        //pr.run(true, args, args.length);
 
         /* Notes
          * As of FF 3.6, this (runAsync) actually works correctly. Yay!
@@ -277,10 +275,14 @@ function mozexRunProgram(context, cmd, esc) {
          * so waiting for an exit doesn't work.  :. it's commented out for now.
          */
 
-        /*
         // Create an observer:
         observer = {
-            observe: function(subject, topic, data){ alert('observer!' + topic); },
+			observe: function(subject, topic, data){ 
+				evt = document.createEvent("MouseEvents");
+				evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				node.dispatchEvent(evt);
+				//alert(node);
+			},
             register: function() {
                 var observerService = Components.classes["@mozilla.org/observer-service;1"]
                     .getService(Components.interfaces.nsIObserverService);
@@ -294,7 +296,6 @@ function mozexRunProgram(context, cmd, esc) {
             }
         }
         pr.runAsync(args, args.length, observer);
-        */
     }
     catch (e) {
         mozexError(context + ": cannot run executable '" +
@@ -348,9 +349,10 @@ function mozexEditTextarea(node, prefs) {
         if (mozexWriteFile(node.value, tmpfile)) {
             // run the editor
             var esc = {
-                't': tmpfile
+                't': tmpfile,
+				'h': node.ownerDocument.location.host,
             };
-            if (! mozexRunProgram("edit textarea", prefs.mozexOptEditor + " " + prefs.mozexOptArgs, esc)) {
+            if (! mozexRunProgram("edit textarea", prefs.mozexOptEditor + " " + prefs.mozexOptArgs, esc, node)) {
                 mozexDeleteFile(tmpfile);
             }
         }
@@ -518,32 +520,17 @@ function mozex_add_edit_button(node, prefs) {
         }
         newNode.setAttribute('mozex',true);
         newNode.setAttribute('href','#');
-        newNode.setAttribute('src','chrome://mozex/content/mozex-open.png');
-        newNode.setAttribute('alt','Click to edit');
         newNode.setAttribute('title','Click to edit');
-        newNode.setAttribute('style','display:inline-block; border:solid 1px #666; padding: 2px 4px; margin-top: 4px; background: #888; opacity: 0.5; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 18) );
-        //newNode.style.left = node.clientWidth - 18;
-        newNode.addEventListener('mouseover', function(e){ this.style.opacity = 1.0; return true; }, true);
-        newNode.addEventListener('mouseout', function(e){ this.style.opacity = 0.5; return true; }, true);
+        newNode.setAttribute('style','display:inline-block; border:solid 1px #999; padding: 2px 4px; margin-top: 4px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 27) );
 
         var newContents = window.content.document.createElement('img');
-        newContents.setAttribute('src','chrome://mozex/content/mozex-open.png');
+        newContents.setAttribute('src','chrome://mozex/content/mozex-nuevo-corner.png');
+        newContents.addEventListener('mouseover', function(e){  e.target.src = 'chrome://mozex/content/mozex-nuevo-corner-hi.png'; e.target.parentNode.style.background = '#BBC'; return true; }, true);
+        newContents.addEventListener('mouseout', function(e){ e.target.src = 'chrome://mozex/content/mozex-nuevo-corner.png'; e.target.parentNode.style.background = '#DDD'; return true; }, true);
         newContents.setAttribute('alt','Click to edit');
         newContents.setAttribute('title','Click to edit');
         newContents.setAttribute('style','border:none;');
         newNode.appendChild(newContents);
         node.parentNode.insertBefore(newNode, node);
-        /*
-           if(node.nextSibling) {
-        // then add the image as a previous of the next node
-        node.parentNode.insertBefore(newNode, node);
-        } else { // just append the node
-        node.parentNode.appendChild(newNode);
-        }
-        */
     }
 }
-
-/* Run run run */
-//window.addEventListener("load", mozexInit, true);
-

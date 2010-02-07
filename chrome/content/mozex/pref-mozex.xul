@@ -48,11 +48,10 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
                     <label value="Default Arguments:" />
                     <textbox id="mozex.default.args" />
                 </row>
-				<row>
-					<label value="" />
-					<description>Filename: %t
-					</description>
-				</row>
+				<row><label value="" />
+					<description>Filename: %t</description></row>
+				<row><label value="" />
+					<description>Hostname: %h</description></row>
 				<row>
 					<label value="Globally Enabled" />
 					<checkbox id="mozex.default.enabled" />

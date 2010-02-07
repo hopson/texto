@@ -34,7 +34,8 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 
 	function make_edit(jsonPrefStr, doc){
 		var prefs = JSON.parse(jsonPrefStr);
-		if( !mozexReadPref("default.enabled") && (typeof(prefs.mozexOptEnabled) == "undefined" || !prefs.mozexOptEnabled)) { return; }
+		if(typeof(prefs.mozexOptEnabled) != "undefined"){ if(prefs.mozexOptEnabled == false){ return; } }
+		else if(!mozexReadPref("default.enabled")){ return; }
 
 		hotKeyed = 0;
 		if(!prefs.mozexOptEditor){ prefs.mozexOptEditor = mozexReadPref("default.editor"); }

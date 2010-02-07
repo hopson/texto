@@ -59,7 +59,6 @@ function initMozexPrefPanel(defaults) {
 		var node = nodes.item(i);
 		node.value = mozexReadPref(node.id);
 		node.addEventListener("blur", function(e){  updateMozexPref(e.target); return true; }, true);
-		//node.addEventListener('change', function(e){ consoleService.logStringMessage('change'); return true; }, true);
 	}
 	// handle the little checkbox:
 	var gd = document.getElementById("mozex.default.enabled");
@@ -297,7 +296,6 @@ function getExtensionPrefList(extension, callback){
 }
 
 function getDomainPrefStr(domain, extension, callback){
-	//alert(urlReverse(domain));
 	if(dbConn == null){ initDomainDb(); }
 	var jsonStr = "{}";
 	var stmt = dbConn.createStatement("SELECT * FROM domain_options WHERE extension = :extension AND :domain LIKE domain_options.domain||'%' ORDER BY domain_options.domain DESC");

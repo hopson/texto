@@ -3,22 +3,27 @@
 EXTENSION=mozex
 
 XPI_FILE=$(EXTENSION).xpi
-
-#BLEAH_JAR_CONTENTS=chrome/content/mozex-testo/communicatorOverlay.xul chrome/content/mozex-testo/md5.js chrome/content/mozex-testo/mozex-testo.js chrome/content/mozex-testo/mozex-testo.xul chrome/content/mozex-testo/mozex-testo-PrefDialog.xul chrome/content/mozex-testo/mozex-testo-PrefOverlay.xul chrome/content/mozex-testo/platformPrefOverlay.xul chrome/content/mozex-testo/pref-mozex-testo.js chrome/content/mozex-testo/pref-mozex-testo.xul chrome/content/mozex-testo/mozex-bg.png chrome/content/mozex-testo/mozex-edit.png chrome/content/mozex-testo/mozex-open.png
-
-#JAR_CONTENTS=chrome/content/$(EXTENSION)/communicatorOverlay.xul chrome/content/$(EXTENSION)/md5.js chrome/content/$(EXTENSION)/mozex-bg.png chrome/content/$(EXTENSION)/mozex-edit.png chrome/content/$(EXTENSION)/mozex-open.png chrome/content/$(EXTENSION)/mozex.js chrome/content/$(EXTENSION)/mozex.xul chrome/content/$(EXTENSION)/mozexPrefOverlay.xul chrome/content/$(EXTENSION)/platformPrefOverlay.xul chrome/content/$(EXTENSION)/pref-mozex.js chrome/content/$(EXTENSION)/pref-mozex.xul
-
-XUL_CONTENTS=chrome/content/$(EXTENSION)/communicatorOverlay.xul chrome/content/$(EXTENSION)/mozex.xul chrome/content/$(EXTENSION)/mozexPrefOverlay.xul chrome/content/$(EXTENSION)/platformPrefOverlay.xul chrome/content/$(EXTENSION)/pref-mozex.xul
-JS_CONTENTS=chrome/content/$(EXTENSION)/md5.js chrome/content/$(EXTENSION)/mozex.js chrome/content/$(EXTENSION)/pref-mozex.js
-OTHER_CONTENTS=chrome/content/$(EXTENSION)/mozex-bg.png chrome/content/$(EXTENSION)/mozex-edit.png chrome/content/$(EXTENSION)/mozex-open.png
-
-
-
-
+XPI_DEV=$(EXTENSION)-dev.xpi
 JAR_FILE=$(EXTENSION).jar
 
-xpi: jar install.rdf
-	zip $(XPI_FILE) install.rdf chrome.manifest $(JAR_FILE)
+CONTENTS=chrome/content/$(EXTENSION)
+
+XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/mozex.xul $(CONTENTS)/mozexPrefOverlay.xul $(CONTENTS)/platformPrefOverlay.xul $(CONTENTS)/pref-mozex.xul
+
+JS_CONTENTS=$(CONTENTS)/md5.js $(CONTENTS)/mozex.js $(CONTENTS)/pref-mozex.js
+
+OTHER_CONTENTS=$(CONTENTS)/mozex-bg.png $(CONTENTS)/mozex-edit.png $(CONTENTS)/mozex-open.png $(CONTENTS)/mozex-nuevo-corner.png $(CONTENTS)/mozex-nuevo-corner-hi.png $(CONTENTS)/mozex-nuevo-bigicon.png $(CONTENTS)/mozex-nuevo-bigicon-hi.png
+
+ROOT_CONTENTS=install.rdf chrome.manifest icon.png
+
+
+xpi: jar install.rdf chrome.manifest-prod
+	cp chrome.manifest-prod chrome.manifest
+	zip $(XPI_FILE) $(ROOT_CONTENTS) $(JAR_FILE)
+
+dev: jar_contents $(OTHER_CONTENTS) chrome.manifest-dev
+	cp chrome.manifest-dev chrome.manifest
+	zip $(XPI_DEV) $(ROOT_CONTENTS) $(XUL_CONTENTS) $(JS_CONTENTS) $(OTHER_CONTENTS)
 
 jar: jar_contents $(OTHER_CONTENTS)
 	rm -f $(JAR_FILE)
@@ -35,5 +40,6 @@ xulcheck: $(XUL_CONTENTS)
 
 clean:
 	rm -f $(XPI_FILE)
+	rm -f $(XPI_DEV)
 	rm -f $(JAR_FILE)
 
