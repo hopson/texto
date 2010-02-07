@@ -12,7 +12,7 @@ XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/mozex.xul $(CONTENT
 
 JS_CONTENTS=$(CONTENTS)/md5.js $(CONTENTS)/mozex.js $(CONTENTS)/pref-mozex.js
 
-OTHER_CONTENTS=$(CONTENTS)/mozex-bg.png $(CONTENTS)/mozex-edit.png $(CONTENTS)/mozex-open.png $(CONTENTS)/mozex-nuevo-corner.png $(CONTENTS)/mozex-nuevo-corner-hi.png $(CONTENTS)/mozex-nuevo-bigicon.png $(CONTENTS)/mozex-nuevo-bigicon-hi.png
+OTHER_CONTENTS=$(CONTENTS)/mozex-nuevo-corner.png $(CONTENTS)/mozex-nuevo-corner-hi.png $(CONTENTS)/mozex-nuevo-bigicon.png $(CONTENTS)/mozex-nuevo-bigicon-hi.png
 
 ROOT_CONTENTS=install.rdf chrome.manifest icon.png
 
