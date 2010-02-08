@@ -1,0 +1,18 @@
+<!ENTITY prefs_window_title "Texto Preferences">
+<!ENTITY prefs_global_settings "Global Settings">
+<!ENTITY prefs_default_editor "Default Editor">
+<!ENTITY prefs_open_appbrowser "Open...">
+<!ENTITY prefs_default_arguments "Default Arguments">
+<!ENTITY prefs_placeholder_filename "Filename">
+<!ENTITY prefs_placeholder_hostname "Hostname">
+<!ENTITY prefs_globally_enabled_flag "Globally Enabled">
+<!ENTITY prefs_domain_settings "Domain Specific Options">
+<!ENTITY prefs_new_domain "New Domain">
+<!ENTITY prefs_nodomains "No Domains">
+<!ENTITY prefs_domain "Domain">
+<!ENTITY prefs_executable "Executable">
+<!ENTITY prefs_arguments "Args">
+<!ENTITY prefs_css_selector "Selector">
+<!ENTITY prefs_enabled "Enabled">
+<!ENTITY prefs_save "Save">
+<!ENTITY prefs_delete "Delete">

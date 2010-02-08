@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!DOCTYPE overlay SYSTEM "chrome://texto/locale/pref-texto.dtd">
 <!--
 The contents of this file are subject to the Mozilla Public
 License Version 1.1 (the "License"); you may not use this file
@@ -27,13 +28,13 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     xmlns:html="http://www.w3.org/1999/xhtml"
     id="pref-texto"
     onload="initMozexPrefPanel(document.getElementById('texto.command.defaults'));"
-    title="texto preferences"
+    title="&prefs_window_title;"
     >
 
 	<script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
 
     <groupbox id="texto.command.defaults">
-        <caption label="Global Settings"/>
+        <caption label="&prefs_global_settings;"/>
         <grid>
             <columns>
                 <column flex="1" />
@@ -41,19 +42,19 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
             </columns>
             <rows>
                 <row>
-                    <label value="Default Editor:" />
-					<hbox><textbox id="texto.default.editor" flex="19" /><button id="texto.default.editorbrowse" flex="1" label="Open..." /></hbox>
+                    <label value="&prefs_default_editor;:" />
+					<hbox><textbox id="texto.default.editor" flex="19" /><button id="texto.default.editorbrowse" flex="1" label="&prefs_open_appbrowser;" /></hbox>
                 </row>
 				<row>
-                    <label value="Default Arguments:" />
+                    <label value="&prefs_default_arguments;:" />
                     <textbox id="texto.default.args" />
                 </row>
 				<row><label value="" />
-					<description>Filename: %t</description></row>
+					<description>&prefs_placeholder_filename;: %t</description></row>
 				<row><label value="" />
-					<description>Hostname: %h</description></row>
+					<description>&prefs_placeholder_hostname;: %h</description></row>
 				<row>
-					<label value="Globally Enabled" />
+					<label value="&prefs_globally_enabled_flag;:" />
 					<checkbox id="texto.default.enabled" />
 				</row>
 
@@ -62,7 +63,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     </groupbox>
 
 	<groupbox id="texto.commands.domainopts">
-		<caption label="Domain Specific Options"/>
+		<caption label="&prefs_domain_settings;"/>
 
 		<grid>
 			<columns>
@@ -73,11 +74,11 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 				<row>
 					<vbox flex="1">
 						<box>
-							<textbox value="New Domain" id="texto.domain.new" flex="15" size="18" />
+							<textbox value="&prefs_new_domain;" id="texto.domain.new" flex="15" size="18" />
 							<button id="texto.domain.add" flex="1" label="Add" />
 						</box>
 						<listbox id="texto.domain.list" rows="8" sortDirection="ascending">
-							<listitem label="No domains" disabled="true" />
+							<listitem label="&prefs_nodomains;" disabled="true" />
 						</listbox>
 					</vbox>
 					<vbox flex="1">
@@ -85,13 +86,13 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 						<grid>
 							<columns><column /><column /></columns>
 							<rows>
-								<row><label value="Domain" /><textbox id="textoOptDomain" readonly="true" /></row>
-								<row><label value="Executable" /><hbox><textbox id="textoOptEditor" flex="50"/><button id="texto.domain.editorbrowse" flex="1" label="Open..." /></hbox></row>
+								<row><label value="&prefs_domain;" /><textbox id="textoOptDomain" readonly="true" /></row>
+								<row><label value="&prefs_executable;" /><hbox><textbox id="textoOptEditor" flex="50"/><button id="texto.domain.editorbrowse" flex="1" label="&prefs_open_appbrowser;" /></hbox></row>
 
-								<row><label value="Args" /><textbox id="textoOptArgs" /></row>
-								<row><label value="Selector" /><textbox id="textoOptAuto" /></row>
-								<row><label value="Enabled" /><checkbox id="textoOptEnabled" /></row>
-								<row><hbox /><hbox><button id="textoOptSave" label="Save" disabled="true" /><button id="textoOptDelete" label="Delete" disabled="true" /></hbox></row>
+								<row><label value="&prefs_arguments;" /><textbox id="textoOptArgs" /></row>
+								<row><label value="&prefs_css_selector;" /><textbox id="textoOptAuto" /></row>
+								<row><label value="&prefs_enabled;" /><checkbox id="textoOptEnabled" /></row>
+								<row><hbox /><hbox><button id="textoOptSave" label="&prefs_save;" disabled="true" /><button id="textoOptDelete" label="&prefs_delete;" disabled="true" /></hbox></row>
 							</rows>
 						</grid>
 					</vbox>

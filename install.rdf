@@ -17,6 +17,5 @@
 		</em:targetApplication>
 		<em:optionsURL>chrome://texto/content/pref-texto.xul</em:optionsURL>
 		<em:homepageURL>http://hopson.ws/blog/</em:homepageURL>
-		<em:updateURL>https://ozzle.org/projects/mozex-testo/updates.rdf</em:updateURL>
 	</Description>
 </RDF>

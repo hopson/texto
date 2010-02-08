@@ -1,3 +1,4 @@
 content texto content/ contentaccessible=yes
+locale texto en-US content/locale/en-US/
 overlay chrome://communicator/content/pref/preftree.xul chrome://texto/content/textoPrefOverlay.xul
 overlay chrome://browser/content/browser.xul chrome://texto/content/texto.xul
