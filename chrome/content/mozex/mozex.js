@@ -305,8 +305,7 @@ function mozexRunProgram(context, cmd, esc, node) {
     return true;
 }
 
-function hopsonRulez(event, prefs) {
-    //var node = this.previousSibling;
+function mozexStartEditor(event, prefs) {
     if(event.target.tagName == "IMG"){
         var target = event.target.parentNode;
     } else {
@@ -315,8 +314,8 @@ function hopsonRulez(event, prefs) {
     var node = target.nextSibling;
 
     node.setAttribute('mozex-obg', node.style.background);
-    node.style.background = 'url(chrome://mozex/content/mozex-master-bg.png) gray no-repeat center';
-    target.firstChild.setAttribute('src',"chrome://mozex/content/mozex-edit.png");
+    node.style.background = 'url(chrome://mozex/content/mozex-nuevo-bigicon-hi.png) gray no-repeat center';
+    target.firstChild.setAttribute('src',"chrome://mozex/content/mozex-nuevo-corner-hi.png");
     target.firstChild.setAttribute('alt',"There are Mozex edits pending on this textarea");
     target.firstChild.setAttribute('title',"There are Mozex edits pending on this textarea");
     node.focus();
@@ -388,7 +387,7 @@ function mozexFillTextarea(node, delFile) {
                 /* update the image to show we're not longer editing */
                 var sib = node.previousSibling;
                 if(sib != null && sib.hasAttribute('mozex') && sib.hasChildNodes()) {
-                    sib.firstChild.setAttribute('src',"chrome://mozex/content/mozex-open.png");
+                    sib.firstChild.setAttribute('src',"chrome://mozex/content/mozex-nuevo-corner.png");
                     sib.firstChild.setAttribute('alt',"Click to edit");
                     sib.firstChild.setAttribute('title',"Click to edit");
 
@@ -512,7 +511,7 @@ function mozex_add_edit_button(node, prefs) {
     if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('mozex')) {
         var newNode = window.content.document.createElement('a');
 
-        newNode.addEventListener("click", function(e){ return hopsonRulez(e, prefs); }, true);
+        newNode.addEventListener("click", function(e){ return mozexStartEditor(e, prefs); }, true);
 
         if(!hotKeyed){
             newNode.setAttribute('accesskey', 'o');
