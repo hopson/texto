@@ -6,7 +6,7 @@ XPI_FILE=$(EXTENSION).xpi
 XPI_DEV=$(EXTENSION)-dev.xpi
 JAR_FILE=$(EXTENSION).jar
 
-CONTENTS=chrome/content/$(EXTENSION)
+CONTENTS=content
 
 XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/mozex.xul $(CONTENTS)/mozexPrefOverlay.xul $(CONTENTS)/platformPrefOverlay.xul $(CONTENTS)/pref-mozex.xul
 

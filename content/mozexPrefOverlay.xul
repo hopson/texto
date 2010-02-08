@@ -25,7 +25,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     <treechildren id="panelChildren">
         <treeitem id="mozex">
             <treerow>
-                <treecell url="chrome://mozex/content/pref-mozex.xul" label="mozex"/>
+				<treecell url="chrome://mozex/content/pref-mozex.xul" label="mozex"/>
             </treerow>
         </treeitem>
     </treechildren>

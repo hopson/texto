@@ -22,7 +22,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript" src="md5.js"/>
-    <script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
+	<script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
     <script type="application/x-javascript" src="mozex.js"/>
 	<script type="application/x-javascript">
 	<![CDATA[

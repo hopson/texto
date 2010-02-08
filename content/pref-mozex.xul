@@ -30,7 +30,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     title="mozex preferences"
     >
 
-    <script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
+	<script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
 
     <groupbox id="mozex.command.defaults">
         <caption label="Global Settings"/>
