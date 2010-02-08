@@ -1,6 +1,6 @@
 #!/usr/bin/make
 
-EXTENSION=mozex
+EXTENSION=texto
 
 XPI_FILE=$(EXTENSION).xpi
 XPI_DEV=$(EXTENSION)-dev.xpi
@@ -8,11 +8,11 @@ JAR_FILE=$(EXTENSION).jar
 
 CONTENTS=content
 
-XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/mozex.xul $(CONTENTS)/mozexPrefOverlay.xul $(CONTENTS)/platformPrefOverlay.xul $(CONTENTS)/pref-mozex.xul
+XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/texto.xul $(CONTENTS)/textoPrefOverlay.xul $(CONTENTS)/platformPrefOverlay.xul $(CONTENTS)/pref-texto.xul
 
-JS_CONTENTS=$(CONTENTS)/md5.js $(CONTENTS)/mozex.js $(CONTENTS)/pref-mozex.js
+JS_CONTENTS=$(CONTENTS)/md5.js $(CONTENTS)/texto.js $(CONTENTS)/pref-texto.js
 
-OTHER_CONTENTS=$(CONTENTS)/mozex-nuevo-corner.png $(CONTENTS)/mozex-nuevo-corner-hi.png $(CONTENTS)/mozex-nuevo-bigicon.png $(CONTENTS)/mozex-nuevo-bigicon-hi.png
+OTHER_CONTENTS=$(CONTENTS)/corner.png $(CONTENTS)/corner-hi.png $(CONTENTS)/icon-lg.png $(CONTENTS)/icon-lg-hi.png
 
 ROOT_CONTENTS=install.rdf chrome.manifest icon.png
 
@@ -29,7 +29,7 @@ jar: jar_contents $(OTHER_CONTENTS)
 	rm -f $(JAR_FILE)
 	zip $(JAR_FILE) $(XUL_CONTENTS) $(JS_CONTENTS) $(OTHER_CONTENTS)
 
-jar_contents: xulcheck
+jar_contents: $(JS_CONTENTS) xulcheck
 
 jstest: $(JS_CONTENTS)
 	@for JS in $(JS_CONTENTS); do \

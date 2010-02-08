@@ -18,14 +18,14 @@ instead of those above.
 Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 -->
 
-<overlay id="mozexPref"
+<overlay id="textoPref"
     xmlns:html="http://www.w3.org/1999/xhtml"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <treechildren id="panelChildren">
-        <treeitem id="mozex">
+        <treeitem id="texto">
             <treerow>
-				<treecell url="chrome://mozex/content/pref-mozex.xul" label="mozex"/>
+				<treecell url="chrome://texto/content/pref-texto.xul" label="texto"/>
             </treerow>
         </treeitem>
     </treechildren>

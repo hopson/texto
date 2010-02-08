@@ -19,20 +19,20 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 -->
 
 <?xml-stylesheet href="chrome://global/skin/"?>
-<?xul-overlay href="chrome://mozex/content/communicatorOverlay.xul"?>
-<?xul-overlay href="chrome://mozex/content/platformPrefOverlay.xul"?>
+<?xul-overlay href="chrome://texto/content/communicatorOverlay.xul"?>
+<?xul-overlay href="chrome://texto/content/platformPrefOverlay.xul"?>
 
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:html="http://www.w3.org/1999/xhtml"
-    id="pref-mozex"
-    onload="initMozexPrefPanel(document.getElementById('mozex.command.defaults'));"
-    title="mozex preferences"
+    id="pref-texto"
+    onload="initMozexPrefPanel(document.getElementById('texto.command.defaults'));"
+    title="texto preferences"
     >
 
-	<script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
+	<script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
 
-    <groupbox id="mozex.command.defaults">
+    <groupbox id="texto.command.defaults">
         <caption label="Global Settings"/>
         <grid>
             <columns>
@@ -42,11 +42,11 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
             <rows>
                 <row>
                     <label value="Default Editor:" />
-					<hbox><textbox id="mozex.default.editor" flex="19" /><button id="mozex.default.editorbrowse" flex="1" label="Open..." /></hbox>
+					<hbox><textbox id="texto.default.editor" flex="19" /><button id="texto.default.editorbrowse" flex="1" label="Open..." /></hbox>
                 </row>
 				<row>
                     <label value="Default Arguments:" />
-                    <textbox id="mozex.default.args" />
+                    <textbox id="texto.default.args" />
                 </row>
 				<row><label value="" />
 					<description>Filename: %t</description></row>
@@ -54,14 +54,14 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 					<description>Hostname: %h</description></row>
 				<row>
 					<label value="Globally Enabled" />
-					<checkbox id="mozex.default.enabled" />
+					<checkbox id="texto.default.enabled" />
 				</row>
 
             </rows>
     </grid>
     </groupbox>
 
-	<groupbox id="mozex.commands.domainopts">
+	<groupbox id="texto.commands.domainopts">
 		<caption label="Domain Specific Options"/>
 
 		<grid>
@@ -73,10 +73,10 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 				<row>
 					<vbox flex="1">
 						<box>
-							<textbox value="New Domain" id="mozex.domain.new" flex="15" size="18" />
-							<button id="mozex.domain.add" flex="1" label="Add" />
+							<textbox value="New Domain" id="texto.domain.new" flex="15" size="18" />
+							<button id="texto.domain.add" flex="1" label="Add" />
 						</box>
-						<listbox id="mozex.domain.list" rows="8" sortDirection="ascending">
+						<listbox id="texto.domain.list" rows="8" sortDirection="ascending">
 							<listitem label="No domains" disabled="true" />
 						</listbox>
 					</vbox>
@@ -85,13 +85,13 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 						<grid>
 							<columns><column /><column /></columns>
 							<rows>
-								<row><label value="Domain" /><textbox id="mozexOptDomain" readonly="true" /></row>
-								<row><label value="Executable" /><hbox><textbox id="mozexOptEditor" flex="50"/><button id="mozex.domain.editorbrowse" flex="1" label="Open..." /></hbox></row>
+								<row><label value="Domain" /><textbox id="textoOptDomain" readonly="true" /></row>
+								<row><label value="Executable" /><hbox><textbox id="textoOptEditor" flex="50"/><button id="texto.domain.editorbrowse" flex="1" label="Open..." /></hbox></row>
 
-								<row><label value="Args" /><textbox id="mozexOptArgs" /></row>
-								<row><label value="Selector" /><textbox id="mozexOptAuto" /></row>
-								<row><label value="Enabled" /><checkbox id="mozexOptEnabled" /></row>
-								<row><hbox /><hbox><button id="mozexOptSave" label="Save" disabled="true" /><button id="mozexOptDelete" label="Delete" disabled="true" /></hbox></row>
+								<row><label value="Args" /><textbox id="textoOptArgs" /></row>
+								<row><label value="Selector" /><textbox id="textoOptAuto" /></row>
+								<row><label value="Enabled" /><checkbox id="textoOptEnabled" /></row>
+								<row><hbox /><hbox><button id="textoOptSave" label="Save" disabled="true" /><button id="textoOptDelete" label="Delete" disabled="true" /></hbox></row>
 							</rows>
 						</grid>
 					</vbox>

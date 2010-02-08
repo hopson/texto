@@ -19,52 +19,38 @@ instead of those above.
 Copyright (C) 2003 Tomas Styblo <tripie@cpan.org>
 */
 
-var mozex_default_tmpdir = "/tmp";  /* unix */
-var mozex_dir_separator = '/';      /* unix */
-var mozex_os = 'unix';              /* unix */
+var texto_default_tmpdir = "/tmp";  /* unix */
+var texto_dir_separator = '/';      /* unix */
+var texto_os = 'unix';              /* unix */
 if (window.navigator.platform.toLowerCase().indexOf("win") != -1) {
-    mozex_default_tmpdir = "C:\\windows\\temp";     /* windows */
-    mozex_dir_separator = '\\';                     /* windows */
-    mozex_os = 'win';                               /* windows */
+    texto_default_tmpdir = "C:\\windows\\temp";     /* windows */
+    texto_dir_separator = '\\';                     /* windows */
+    texto_os = 'win';                               /* windows */
 }
 
-var mozex_alert_error = "mozex error: ";
-var mozex_tmpfiles_maxage = 3600 * 24; // in seconds
-// var mozex_tmpfiles_maxage = 3600; // in seconds
+var texto_alert_error = "texto error: ";
+var texto_tmpfiles_maxage = 3600 * 24; // in seconds
+// var texto_tmpfiles_maxage = 3600; // in seconds
 var hotKeyed = 0;
 
-function mozexGetPrefTmpdir() {
-    var dir = mozexReadPref("general.tmpdir");
+function textoGetPrefTmpdir() {
+    var dir = textoReadPref("general.tmpdir");
     if (dir == null || dir.length == 0) {
-        dir = mozex_default_tmpdir;
+        dir = texto_default_tmpdir;
     }
 
-    if (! mozexExistsFile(dir)) {
-        mozexError("temporary directory '" + dir + "' does not exist");
+    if (! textoExistsFile(dir)) {
+        textoError("temporary directory '" + dir + "' does not exist");
         return null;
     }
     return dir;
 }
 
-function mozexGetPrefCommand(name) {
-    var cmd = mozexReadPref("command" + '.' + name);
-    if (name == 'aim') {
-        var name = 'sendlink';
-    } 
-    if (cmd == null || cmd.length == 0) {
-        mozexError("no '" + name + "' command is set");
-        return null;
-    }
-    else {
-        return cmd;
-    }
-}
-
-function mozexTmpFilenameTextarea(textarea_node) {
-    var tmpdir = mozexGetPrefTmpdir();
+function textoTmpFilenameTextarea(textarea_node) {
+    var tmpdir = textoGetPrefTmpdir();
     if (tmpdir) {
         var d = new Date();
-        return tmpdir + mozex_dir_separator + "mozex.textarea." + 
+        return tmpdir + texto_dir_separator + "texto.textarea." + 
            hex_md5(textarea_node.ownerDocument.URL + ':' + 
                    textarea_node.getAttribute("name")) + ".txt";
     }
@@ -73,19 +59,7 @@ function mozexTmpFilenameTextarea(textarea_node) {
     }
 }
 
-function mozexTmpFilenameSource(url) {
-    var tmpdir = mozexGetPrefTmpdir();
-    if (tmpdir) {
-        var d = new Date();
-        return tmpdir + mozex_dir_separator + "mozex.source." + 
-           hex_md5(url) + '.' + d.getTime() + ".html";
-    }
-    else {
-        return null;
-    }
-}
-
-function mozexHandleMouseDown(evt) {
+function textoHandleMouseDown(evt) {
     var elem_type = null;
     var link_type = null;
     for(var node = evt.originalTarget; node != null; node = node.parentNode) {
@@ -93,8 +67,8 @@ function mozexHandleMouseDown(evt) {
             elem_type = node.localName.toUpperCase();
             if (elem_type == "TEXTAREA") {
                 if (evt.button == 0 && 
-                        mozexExistsFile(mozexTmpFilenameTextarea(node))) {
-                    mozexFillTextarea(node, true);
+                        textoExistsFile(textoTmpFilenameTextarea(node))) {
+                    textoFillTextarea(node, true);
                     return false;
                 }
                 break;
@@ -103,32 +77,26 @@ function mozexHandleMouseDown(evt) {
     }
 }
 
-function mozexPurgeTmpdir() {
-    var files = mozexReadDir(mozexGetPrefTmpdir());
+function textoPurgeTmpdir() {
+    var files = textoReadDir(textoGetPrefTmpdir());
     files.QueryInterface(Components.interfaces.nsISimpleEnumerator);
     while (files.hasMoreElements()) {
         var f = files.getNext();
         f.QueryInterface(Components.interfaces.nsIFile);
         var d = new Date();
-        if ((f.leafName.substr(0, 5) == "mozex") && 
-            (d.getTime() - f.lastModifiedTime > mozex_tmpfiles_maxage * 1000)) {
+        if ((f.leafName.substr(0, 5) == "texto") && 
+            (d.getTime() - f.lastModifiedTime > texto_tmpfiles_maxage * 1000)) {
             try {
                 f.remove(false);
             }
             catch (e) {
-                mozexError("cannot delete temporary file '" + f.path + "': " + e);
+                textoError("cannot delete temporary file '" + f.path + "': " + e);
             }
         }
     }
 }
 
-function mozex_unescape(str) {
-    var buf = str.replace(/\+/g, " ");
-    buf = decodeURIComponent(buf);
-    return buf;
-}
-
-function mozexRunProgram(context, cmd, esc, node) {
+function textoRunProgram(context, cmd, esc, node) {
     if (cmd == null) {
         return false; // no command is set
     }
@@ -161,7 +129,7 @@ function mozexRunProgram(context, cmd, esc, node) {
 
     var executable = scmd.shift();
     if (executable.length == 0) {
-        mozexError(context + ": no executable in command");
+        textoError(context + ": no executable in command");
         return false;
     }
 
@@ -176,7 +144,7 @@ function mozexRunProgram(context, cmd, esc, node) {
             if (c == '%') {
                 var a = param[++e];
                 if (esc[a] === undefined) {
-                    mozexError(context + ": unknown escape in command '" + cmd + "': %" + a);
+                    textoError(context + ": unknown escape in command '" + cmd + "': %" + a);
                     return false;
                 } else {
                     buf += esc[a];
@@ -196,7 +164,7 @@ function mozexRunProgram(context, cmd, esc, node) {
         var path = null;
 
         // $PATH stuff (only on UNIX)
-        if (mozex_os == 'unix') {
+        if (texto_os == 'unix') {
             try {
                 path = pr.getEnvironment("PATH").split(":");
             } catch (e) {
@@ -210,7 +178,7 @@ function mozexRunProgram(context, cmd, esc, node) {
         if (executable.charAt(0) == "/" || path == null) {
             exec.initWithPath(executable);
             if (! exec.exists()) {
-                mozexError(context + ": executable '" + executable + "' does not exist.");
+                textoError(context + ": executable '" + executable + "' does not exist.");
                 return false;
             } else if (window.navigator.platform.toLowerCase().indexOf("mac") != -1) {
                 // on a mac, we might need to check inside .app bundles
@@ -218,8 +186,8 @@ function mozexRunProgram(context, cmd, esc, node) {
                 if(exec.isDirectory()){
                     var plist = Components.classes["@mozilla.org/file/local;1"].
                         createInstance(Components.interfaces.nsILocalFile);
-                    plist_path = executable + mozex_dir_separator + 'Contents' +
-                        mozex_dir_separator + 'Info.plist';
+                    plist_path = executable + texto_dir_separator + 'Contents' +
+                        texto_dir_separator + 'Info.plist';
                     plist.initWithPath(plist_path);
                     if(plist.exists() && plist.isFile()){
                         // then we need to parse the plist file for executable name
@@ -237,8 +205,8 @@ function mozexRunProgram(context, cmd, esc, node) {
                                 // skip nuisance text nodes in between
                                 while(nextNode.nodeType == Node.TEXT_NODE){ nextNode = nextNode.nextSibling; }
                                 if(nextNode.tagName == "string"){
-                                    executable = executable + mozex_dir_separator + 'Contents' +
-                                        mozex_dir_separator + 'MacOS' + mozex_dir_separator +
+                                    executable = executable + texto_dir_separator + 'Contents' +
+                                        texto_dir_separator + 'MacOS' + texto_dir_separator +
                                         nextNode.firstChild.wholeText;
                                     exec.initWithPath(executable);
                                 }
@@ -259,7 +227,7 @@ function mozexRunProgram(context, cmd, esc, node) {
                 }
             }
             if (!found) {
-                mozexError(context + ": could not find '" + executable + "' in path.");
+                textoError(context + ": could not find '" + executable + "' in path.");
                 return false;
             }
         }
@@ -298,14 +266,14 @@ function mozexRunProgram(context, cmd, esc, node) {
         pr.runAsync(args, args.length, observer);
     }
     catch (e) {
-        mozexError(context + ": cannot run executable '" +
+        textoError(context + ": cannot run executable '" +
                    executable + "' (args: " + args + "): " + e);
         return false;
     }
     return true;
 }
 
-function mozexStartEditor(event, prefs) {
+function textoStartEditor(event, prefs) {
     if(event.target.tagName == "IMG"){
         var target = event.target.parentNode;
     } else {
@@ -313,102 +281,101 @@ function mozexStartEditor(event, prefs) {
     }
     var node = target.nextSibling;
 
-    node.setAttribute('mozex-obg', node.style.background);
-    node.style.background = 'url(chrome://mozex/content/mozex-nuevo-bigicon-hi.png) gray no-repeat center';
-    target.firstChild.setAttribute('src',"chrome://mozex/content/mozex-nuevo-corner-hi.png");
+    node.setAttribute('texto-obg', node.style.background);
+    node.style.background = 'url(chrome://texto/content/icon-lg-hi.png) gray no-repeat center';
+    target.firstChild.setAttribute('src',"chrome://texto/content/corner-hi.png");
     target.firstChild.setAttribute('alt',"There are Mozex edits pending on this textarea");
     target.firstChild.setAttribute('title',"There are Mozex edits pending on this textarea");
     node.focus();
-    mozexEditTextarea(node, prefs);
-    node.addEventListener('focus', mozexUpdateTextarea, false);
-    node.addEventListener('click', mozexHandleMouseDown, false);
+    textoEditTextarea(node, prefs);
+    node.addEventListener('focus', textoUpdateTextarea, false);
+    node.addEventListener('click', textoHandleMouseDown, false);
     if(event.preventDefault){ event.preventDefault(); }
     return false;
 }
 
-function mozexEditTextarea(node, prefs) {
-    mozexPurgeTmpdir();
+function textoEditTextarea(node, prefs) {
+    textoPurgeTmpdir();
 
-    var tmpfile = mozexTmpFilenameTextarea(node);
+    var tmpfile = textoTmpFilenameTextarea(node);
     if (! tmpfile) {
         return;
     }
 
     if (node) {
-        if (mozexExistsFile(tmpfile)) {
-            if (confirm("mozex: This textarea already is being edited.\n" + 
+        if (textoExistsFile(tmpfile)) {
+            if (confirm("texto: This textarea already is being edited.\n" + 
                           "Do you want to start another instance of the editor ?\n" + 
                           "All data written in the previous instance will be lost.")) {
-                mozexDeleteFile(tmpfile);
+                textoDeleteFile(tmpfile);
             }
             else {
                 return;
             }
         }
-        if (mozexWriteFile(node.value, tmpfile)) {
+        if (textoWriteFile(node.value, tmpfile)) {
             // run the editor
             var esc = {
                 't': tmpfile,
 				'h': node.ownerDocument.location.host,
             };
-            if (! mozexRunProgram("edit textarea", prefs.mozexOptEditor + " " + prefs.mozexOptArgs, esc, node)) {
-                mozexDeleteFile(tmpfile);
+            if (! textoRunProgram("edit textarea", prefs.textoOptEditor + " " + prefs.textoOptArgs, esc, node)) {
+                textoDeleteFile(tmpfile);
             }
         }
     }
     else {
-        mozexError("no textarea node found");
+        textoError("no textarea node found");
     }
 }
 
-function mozexUpdateTextarea(event) {
-    mozexFillTextarea(event.target, false);
+function textoUpdateTextarea(event) {
+    textoFillTextarea(event.target, false);
     if(event.preventDefault){ event.preventDefault(); }
     return false;
 }
 
-function mozexFillTextarea(node, delFile) {
-    var tmpfile = mozexTmpFilenameTextarea(node);
+function textoFillTextarea(node, delFile) {
+    var tmpfile = textoTmpFilenameTextarea(node);
     if (delFile ) {
         if(! tmpfile) {
             alert("FillTextarea No tempfile: "+tmpfile);
             return false;
         }
-        node.removeEventListener('focus', mozexUpdateTextarea, false);
-        node.removeEventListener('click', mozexHandleMouseDown, false);
+        node.removeEventListener('focus', textoUpdateTextarea, false);
+        node.removeEventListener('click', textoHandleMouseDown, false);
     }
 
-    if (node && mozexExistsFile(tmpfile)) {
-        var data = mozexReadFile(tmpfile);
+    if (node && textoExistsFile(tmpfile)) {
+        var data = textoReadFile(tmpfile);
         if (data != null) {
             node.value = data;
             if(delFile){
-                mozexDeleteFile(tmpfile);
+                textoDeleteFile(tmpfile);
                 /* update the image to show we're not longer editing */
                 var sib = node.previousSibling;
-                if(sib != null && sib.hasAttribute('mozex') && sib.hasChildNodes()) {
-                    sib.firstChild.setAttribute('src',"chrome://mozex/content/mozex-nuevo-corner.png");
+                if(sib != null && sib.hasAttribute('texto') && sib.hasChildNodes()) {
+                    sib.firstChild.setAttribute('src',"chrome://texto/content/corner.png");
                     sib.firstChild.setAttribute('alt',"Click to edit");
                     sib.firstChild.setAttribute('title',"Click to edit");
 
-                    if(node.hasAttribute('mozex-obg')) {
-                        node.style.background = node.getAttribute('mozex-obg');
-                        node.removeAttribute('mozex-obg');
+                    if(node.hasAttribute('texto-obg')) {
+                        node.style.background = node.getAttribute('texto-obg');
+                        node.removeAttribute('texto-obg');
                     }
                 }
             }
         }
         return true;
     } else {
-        //node.removeEventListener('focus', mozexFillTextarea, false);
-        node.removeEventListener('focus', mozexUpdateTextarea, false);
-        node.removeEventListener('click', mozexHandleMouseDown, false);
+        node.removeEventListener('focus', textoUpdateTextarea, false);
+        node.removeEventListener('click', textoHandleMouseDown, false);
 
         return false;
     }
 }
 
-function mozexReadDir(dirname) {
+function textoReadDir(dirname) {
     var dir = Components.classes["@mozilla.org/file/local;1"].
                createInstance(Components.interfaces.nsILocalFile);
     dir.initWithPath(dirname);
@@ -416,11 +383,11 @@ function mozexReadDir(dirname) {
         return dir.directoryEntries;
     }
     else {
-        mozexError("path '" + dir + "' is not a directory");
+        textoError("path '" + dir + "' is not a directory");
     }
 }
 
-function mozexDeleteFile(filename) {
+function textoDeleteFile(filename) {
     var file = Components.classes["@mozilla.org/file/local;1"].
                createInstance(Components.interfaces.nsILocalFile);
     file.initWithPath(filename);
@@ -429,19 +396,19 @@ function mozexDeleteFile(filename) {
             file.remove(false);
         }
         catch (e) {
-            mozexError("cannot delete file '" + file.path + "': " + e);
+            textoError("cannot delete file '" + file.path + "': " + e);
         }
     }
 }
 
-function mozexExistsFile(filename) {
+function textoExistsFile(filename) {
     var file = Components.classes["@mozilla.org/file/local;1"].
                createInstance(Components.interfaces.nsILocalFile);
     file.initWithPath(filename);
     return file.exists();
 }
 
-function mozexWriteFile(data, filename) {
+function textoWriteFile(data, filename) {
     try {
         var file = Components.classes["@mozilla.org/file/local;1"].
                    createInstance(Components.interfaces.nsILocalFile);
@@ -451,7 +418,7 @@ function mozexWriteFile(data, filename) {
             file.create(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
         }
         catch (e) { 
-            mozexError("cannot create temporary file '" + filename + "': " + e); 
+            textoError("cannot create temporary file '" + filename + "': " + e); 
             return false;
         }
 
@@ -464,13 +431,13 @@ function mozexWriteFile(data, filename) {
         stream.close();
     } 
     catch (e) {
-        mozexError("cannot write to file '" + filename + "':" + e);
+        textoError("cannot write to file '" + filename + "':" + e);
         return false;
     }
     return true;
 }
 
-function mozexReadFile(filename) {
+function textoReadFile(filename) {
     var MODE_RDONLY = 0x01;
     var PERM_IRUSR = 00400;
 
@@ -491,41 +458,41 @@ function mozexReadFile(filename) {
             return data;
         }
         else {
-            mozexError("temporary file '" + filename + "' does not exist or is not readable");
+            textoError("temporary file '" + filename + "' does not exist or is not readable");
             return null;
         }
     }
     catch (e) {
-        mozexError("cannot read from temporary file '" + filename + "': " + e);
+        textoError("cannot read from temporary file '" + filename + "': " + e);
     }
     return null;
 }
 
-function mozexError(msg) {
-    alert(mozex_alert_error + msg);
+function textoError(msg) {
+    alert(texto_alert_error + msg);
 }
 
-function mozex_add_edit_button(node, prefs) {
+function texto_add_edit_button(node, prefs) {
 
     var sib = node.nextSibling;
-    if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('mozex')) {
+    if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('texto')) {
         var newNode = window.content.document.createElement('a');
 
-        newNode.addEventListener("click", function(e){ return mozexStartEditor(e, prefs); }, true);
+        newNode.addEventListener("click", function(e){ return textoStartEditor(e, prefs); }, true);
 
         if(!hotKeyed){
             newNode.setAttribute('accesskey', 'o');
             hotKeyed++;
         }
-        newNode.setAttribute('mozex',true);
+        newNode.setAttribute('texto',true);
         newNode.setAttribute('href','#');
         newNode.setAttribute('title','Click to edit');
         newNode.setAttribute('style','display:inline-block; border:solid 1px #999; padding: 2px 4px; margin-top: 4px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 27) );
 
         var newContents = window.content.document.createElement('img');
-        newContents.setAttribute('src','chrome://mozex/content/mozex-nuevo-corner.png');
-        newContents.addEventListener('mouseover', function(e){  e.target.src = 'chrome://mozex/content/mozex-nuevo-corner-hi.png'; e.target.parentNode.style.background = '#BBC'; return true; }, true);
-        newContents.addEventListener('mouseout', function(e){ e.target.src = 'chrome://mozex/content/mozex-nuevo-corner.png'; e.target.parentNode.style.background = '#DDD'; return true; }, true);
+        newContents.setAttribute('src','chrome://texto/content/corner.png');
+        newContents.addEventListener('mouseover', function(e){  e.target.src = 'chrome://texto/content/corner-hi.png'; e.target.parentNode.style.background = '#BBC'; return true; }, true);
+        newContents.addEventListener('mouseout', function(e){ e.target.src = 'chrome://texto/content/corner.png'; e.target.parentNode.style.background = '#DDD'; return true; }, true);
         newContents.setAttribute('alt','Click to edit');
         newContents.setAttribute('title','Click to edit');
         newContents.setAttribute('style','border:none;');

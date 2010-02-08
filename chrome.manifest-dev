@@ -1,3 +1,3 @@
-content mozex content/ contentaccessible=yes
-overlay chrome://communicator/content/pref/preftree.xul chrome://mozex/content/mozexPrefOverlay.xul
-overlay chrome://browser/content/browser.xul chrome://mozex/content/mozex.xul
+content texto content/ contentaccessible=yes
+overlay chrome://communicator/content/pref/preftree.xul chrome://texto/content/textoPrefOverlay.xul
+overlay chrome://browser/content/browser.xul chrome://texto/content/texto.xul

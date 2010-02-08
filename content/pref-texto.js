@@ -17,10 +17,10 @@ instead of those above.
 Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 */
 
-var mozex_prefs = Components.classes["@mozilla.org/preferences-service;1"].
-    getService(Components.interfaces.nsIPrefService).getBranch("mozex.");
+var texto_prefs = Components.classes["@mozilla.org/preferences-service;1"].
+    getService(Components.interfaces.nsIPrefService).getBranch("texto.");
 var dbConn = null;
-var mozex_domain_prefs = null;
+var texto_domain_prefs = null;
 var GLOBAL_QUERY_STATUS_THINGY = 0;
 
 /* DEBUG */
@@ -28,21 +28,21 @@ var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
                                    .getService(Components.interfaces.nsIConsoleService);
 /* END DEBUG */
 
-function mozexReadPref(name) {
-	if(name.indexOf('mozex.') == 0){
-		name = name.substring('mozex.'.length);
+function textoReadPref(name) {
+	if(name.indexOf('texto.') == 0){
+		name = name.substring('texto.'.length);
 	}
 
-    if (mozex_prefs.prefHasUserValue(name)) {
-        var type = mozex_prefs.getPrefType(name);
+    if (texto_prefs.prefHasUserValue(name)) {
+        var type = texto_prefs.getPrefType(name);
         if (type & 128) {
-            return mozex_prefs.getBoolPref(name);
+            return texto_prefs.getBoolPref(name);
         }
         else if (type & 64) {
-            return mozex_prefs.getIntPref(name);
+            return texto_prefs.getIntPref(name);
         }
         else if (type & 32) {
-            return mozex_prefs.getCharPref(name);
+            return texto_prefs.getCharPref(name);
         }
         else {
             return null;
@@ -57,52 +57,52 @@ function initMozexPrefPanel(defaults) {
 	var nodes = defaults.querySelectorAll('textbox');
 	for(var i=0; i<nodes.length; i++){
 		var node = nodes.item(i);
-		node.value = mozexReadPref(node.id);
+		node.value = textoReadPref(node.id);
 		node.addEventListener("blur", function(e){  updateMozexPref(e.target); return true; }, true);
 	}
 	// handle the little checkbox:
-	var gd = document.getElementById("mozex.default.enabled");
-	gd.checked = mozexReadPref(gd.id);
+	var gd = document.getElementById("texto.default.enabled");
+	gd.checked = textoReadPref(gd.id);
 	gd.addEventListener("command",
-			function(e){ mozex_prefs.setBoolPref("default.enabled", gd.checked); return true; },
+			function(e){ texto_prefs.setBoolPref("default.enabled", gd.checked); return true; },
 			true);
 
 	// handler for add button:
-	var addButt = document.getElementById("mozex.domain.add");
-	var domainField = document.getElementById("mozex.domain.new");
+	var addButt = document.getElementById("texto.domain.add");
+	var domainField = document.getElementById("texto.domain.new");
 	addButt.addEventListener("command",
 			function(e){
-				var obj = { 'mozexOptEnabled' : true };
-				addExtensionPrefObj(domainField.value, 'mozex', obj, function(){ insertNewDomain(domainField.value, JSON.stringify(obj), true); domainField.value = 'New Domain'; }); return true; },
+				var obj = { 'textoOptEnabled' : true };
+				addExtensionPrefObj(domainField.value, 'texto', obj, function(){ insertNewDomain(domainField.value, JSON.stringify(obj), true); domainField.value = 'New Domain'; }); return true; },
 			true);
 	domainField.addEventListener("focus", function(e){ domainField.value = ""; return true; }, true);
 
 	// delete button:
-	var delButt = document.getElementById("mozexOptDelete");
+	var delButt = document.getElementById("textoOptDelete");
 	delButt.addEventListener("command",
 			function(e){
-				delDomainPref(document.getElementById("mozexOptDomain").value, 'mozex', function(){ var n = document.getElementById("mozex.domain.list"); n.removeChild(n.childNodes[n.selectedIndex]); resetDomainPrefDialog(); });
+				delDomainPref(document.getElementById("textoOptDomain").value, 'texto', function(){ var n = document.getElementById("texto.domain.list"); n.removeChild(n.childNodes[n.selectedIndex]); resetDomainPrefDialog(); });
 				return true; },
 			true);
 	// save button:
-	var saveButt = document.getElementById("mozexOptSave");
+	var saveButt = document.getElementById("textoOptSave");
 	saveButt.addEventListener("command",
 			function(e){
 				// what we are gonna do here is save this thing
 				// get the "domain" value
-				var domain = document.getElementById("mozexOptDomain").value;
+				var domain = document.getElementById("textoOptDomain").value;
 				// build the json object
 				var jsonObj = {};
-				var opts = {"mozexOptEditor":'value', "mozexOptArgs":'value', "mozexOptAuto":'value', "mozexOptEnabled":'checked'};
+				var opts = {"textoOptEditor":'value', "textoOptArgs":'value', "textoOptAuto":'value', "textoOptEnabled":'checked'};
 				for(var o in opts){ jsonObj[o] = document.getElementById(o)[opts[o]]; }
 				var jsonStr = JSON.stringify(jsonObj);
 				// save it all
 				addDomainPrefStr(
 					domain,
-					'mozex',
+					'texto',
 					jsonStr,
 					function(){
-						var list = document.getElementById('mozex.domain.list');
+						var list = document.getElementById('texto.domain.list');
 						list.childNodes[list.selectedIndex].value = jsonStr;
 						});
 				return true;
@@ -110,20 +110,20 @@ function initMozexPrefPanel(defaults) {
 			true);
 
 	// browse for app dialog
-	var appButt = document.getElementById("mozex.default.editorbrowse");
+	var appButt = document.getElementById("texto.default.editorbrowse");
 	appButt.addEventListener(
 			'command',
-			function(e){ mozexAppPicker(e, document.getElementById('mozex.default.editor')); return true; },
+			function(e){ textoAppPicker(e, document.getElementById('texto.default.editor')); return true; },
 			true);
-	var domainButt = document.getElementById("mozex.domain.editorbrowse");
+	var domainButt = document.getElementById("texto.domain.editorbrowse");
 	domainButt.addEventListener(
 			'command', 
-			function(e){ mozexAppPicker(e, document.getElementById('mozexOptEditor')); return true; },
+			function(e){ textoAppPicker(e, document.getElementById('textoOptEditor')); return true; },
 			true);
 	initDomainListing();
 	resetDomainPrefDialog();
 }
-function mozexAppPicker(e, field){
+function textoAppPicker(e, field){
 	var nsIFilePicker = Components.interfaces.nsIFilePicker;
 	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
 	fp.init(window, "Select a File", nsIFilePicker.modeOpen);
@@ -154,7 +154,7 @@ function mozexAppPicker(e, field){
 }
 
 function insertNewDomain(domain, value, andScroll){
-	var listbox = document.getElementById("mozex.domain.list");
+	var listbox = document.getElementById("texto.domain.list");
 	var indent = "";
 	var rdomain = urlReverse(domain);
 	for(var i = 0; i < listbox.childNodes.length; i++){
@@ -178,11 +178,11 @@ function insertNewDomain(domain, value, andScroll){
 }
 
 function initDomainListing(focusEl){
-	var lb = document.getElementById('mozex.domain.list');
+	var lb = document.getElementById('texto.domain.list');
 	if(lb == null){ return; }
-	getExtensionPrefList('mozex',
+	getExtensionPrefList('texto',
 		function(prefList){
-			mozex_domain_prefs = prefList;
+			texto_domain_prefs = prefList;
 			while(lb.hasChildNodes()){
 				lb.removeChild(lb.firstChild);
 			}
@@ -206,16 +206,16 @@ function initDomainListing(focusEl){
 
 function showDomainPrefDialog(domain, jsonStr) {
 	var jsonObj = JSON.parse(jsonStr);
-	document.getElementById("mozexOptDomain").value = domain;
-	document.getElementById("mozexOptDelete").disabled = false;
-	document.getElementById("mozexOptSave").disabled = false;
-	document.getElementById("mozexOptEditor").disabled = false;
-	document.getElementById("mozexOptAuto").disabled = false;
-	document.getElementById("mozexOptEnabled").disabled = false;
-	document.getElementById("mozexOptArgs").disabled = false;
-	document.getElementById("mozex.domain.editorbrowse").disabled = false;
+	document.getElementById("textoOptDomain").value = domain;
+	document.getElementById("textoOptDelete").disabled = false;
+	document.getElementById("textoOptSave").disabled = false;
+	document.getElementById("textoOptEditor").disabled = false;
+	document.getElementById("textoOptAuto").disabled = false;
+	document.getElementById("textoOptEnabled").disabled = false;
+	document.getElementById("textoOptArgs").disabled = false;
+	document.getElementById("texto.domain.editorbrowse").disabled = false;
 
-	var opts = {mozexOptEditor:'value', mozexOptArgs:'value', mozexOptAuto:'value', mozexOptEnabled:'checked'};
+	var opts = {textoOptEditor:'value', textoOptArgs:'value', textoOptAuto:'value', textoOptEnabled:'checked'};
 	for(var i in opts){
 		var node = document.getElementById(i);
 		if(typeof(jsonObj[i]) != "undefined"){
@@ -228,25 +228,25 @@ function showDomainPrefDialog(domain, jsonStr) {
 }
 
 function resetDomainPrefDialog(){
-	showDomainPrefDialog("", JSON.stringify({mozexOptEditor:'', mozexOptArgs:'', mozexOptAuto:'', mozexOptEnabled:false}));
-	document.getElementById("mozexOptDelete").disabled = true;
-	document.getElementById("mozexOptSave").disabled = true;
-	document.getElementById("mozexOptEditor").disabled = true;
-	document.getElementById("mozexOptAuto").disabled = true;
-	document.getElementById("mozexOptEnabled").disabled = true;
-	document.getElementById("mozexOptArgs").disabled = true;
-	document.getElementById("mozex.domain.editorbrowse").disabled = true;
+	showDomainPrefDialog("", JSON.stringify({textoOptEditor:'', textoOptArgs:'', textoOptAuto:'', textoOptEnabled:false}));
+	document.getElementById("textoOptDelete").disabled = true;
+	document.getElementById("textoOptSave").disabled = true;
+	document.getElementById("textoOptEditor").disabled = true;
+	document.getElementById("textoOptAuto").disabled = true;
+	document.getElementById("textoOptEnabled").disabled = true;
+	document.getElementById("textoOptArgs").disabled = true;
+	document.getElementById("texto.domain.editorbrowse").disabled = true;
 }
 
 
 function updateMozexPref(prefBox) {
-	if(prefBox.id.indexOf('mozex.') != 0){ return; }
-	var prefName = prefBox.id.substring('mozex.'.length);
-	mozex_prefs.setCharPref(prefName, prefBox.value);
+	if(prefBox.id.indexOf('texto.') != 0){ return; }
+	var prefName = prefBox.id.substring('texto.'.length);
+	texto_prefs.setCharPref(prefName, prefBox.value);
 }
 
 function changeMozexPrefs(el) {
-    mozex_prefs.setCharPref("command.textarea", document.getElementById("prefMozexTextareaEditor").value);
+    texto_prefs.setCharPref("command.textarea", document.getElementById("prefMozexTextareaEditor").value);
 }
 
 

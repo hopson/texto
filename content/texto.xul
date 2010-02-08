@@ -18,42 +18,42 @@ instead of those above.
 Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 -->
 
-<overlay id="mozex"
+<overlay id="texto"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript" src="md5.js"/>
-	<script type="application/x-javascript" src="chrome://mozex/content/pref-mozex.js"/>
-    <script type="application/x-javascript" src="mozex.js"/>
+	<script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
+    <script type="application/x-javascript" src="texto.js"/>
 	<script type="application/x-javascript">
 	<![CDATA[
 	function check_edit(doc){
 		var l = doc.location;
 		var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
-		getDomainPrefStr(url, 'mozex', function(jsonStr){ make_edit(jsonStr, doc); });
+		getDomainPrefStr(url, 'texto', function(jsonStr){ make_edit(jsonStr, doc); });
 	}
 
 	function make_edit(jsonPrefStr, doc){
 		var prefs = JSON.parse(jsonPrefStr);
-		if(typeof(prefs.mozexOptEnabled) != "undefined"){ if(prefs.mozexOptEnabled == false){ return; } }
-		else if(!mozexReadPref("default.enabled")){ return; }
+		if(typeof(prefs.textoOptEnabled) != "undefined"){ if(prefs.textoOptEnabled == false){ return; } }
+		else if(!textoReadPref("default.enabled")){ return; }
 
 		hotKeyed = 0;
-		if(!prefs.mozexOptEditor){ prefs.mozexOptEditor = mozexReadPref("default.editor"); }
-		if(!prefs.mozexOptArgs){ prefs.mozexOptArgs = mozexReadPref("default.args"); }
+		if(!prefs.textoOptEditor){ prefs.textoOptEditor = textoReadPref("default.editor"); }
+		if(!prefs.textoOptArgs){ prefs.textoOptArgs = textoReadPref("default.args"); }
 
 		// automatically quote executables with spaces in the name:
-		if(prefs.mozexOptEditor.indexOf(" ") != -1){
-			prefs.mozexOptEditor = "\"" + prefs.mozexOptEditor + "\"";
+		if(prefs.textoOptEditor.indexOf(" ") != -1){
+			prefs.textoOptEditor = "\"" + prefs.textoOptEditor + "\"";
 		}
 
 		var nodes;
-		if(prefs.mozexOptAuto){
-			nodes = doc.querySelectorAll(prefs.mozexOptAuto);
+		if(prefs.textoOptAuto){
+			nodes = doc.querySelectorAll(prefs.textoOptAuto);
 		} else {
 			nodes = doc.querySelectorAll('textarea');
 		}
 		for(var i = 0; i < nodes.length; i++){
-			mozex_add_edit_button(nodes[i], prefs);
+			texto_add_edit_button(nodes[i], prefs);
 		}
 	}
 
