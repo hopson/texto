@@ -22,15 +22,19 @@ Copyright (C) 2003 Tomas Styblo <tripie@cpan.org>
 var texto_default_tmpdir = "/tmp";  /* unix */
 var texto_dir_separator = '/';      /* unix */
 var texto_os = 'unix';              /* unix */
+
+var userEnvironment = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment);
+if(userEnvironment.exists("TEMP")){
+    // use the environment TEMP dir if it exists
+    texto_default_tmpdir = userEnvironment.get("TEMP");
+}
 if (window.navigator.platform.toLowerCase().indexOf("win") != -1) {
-    texto_default_tmpdir = "C:\\windows\\temp";     /* windows */
     texto_dir_separator = '\\';                     /* windows */
     texto_os = 'win';                               /* windows */
 }
 
 var texto_alert_error = "texto error: ";
 var texto_tmpfiles_maxage = 3600 * 24; // in seconds
-// var texto_tmpfiles_maxage = 3600; // in seconds
 var hotKeyed = 0;
 
 function textoGetPrefTmpdir() {
@@ -84,7 +88,7 @@ function textoPurgeTmpdir() {
         var f = files.getNext();
         f.QueryInterface(Components.interfaces.nsIFile);
         var d = new Date();
-        if ((f.leafName.substr(0, 5) == "texto") && 
+        if ((f.leafName.substr(0, 5) == "texto") &&
             (d.getTime() - f.lastModifiedTime > texto_tmpfiles_maxage * 1000)) {
             try {
                 f.remove(false);
@@ -249,7 +253,6 @@ function textoRunProgram(context, cmd, esc, node) {
 				evt = document.createEvent("MouseEvents");
 				evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 				node.dispatchEvent(evt);
-				//alert(node);
 			},
             register: function() {
                 var observerService = Components.classes["@mozilla.org/observer-service;1"]
@@ -339,7 +342,7 @@ function textoFillTextarea(node, delFile) {
     var tmpfile = textoTmpFilenameTextarea(node);
     if (delFile ) {
         if(! tmpfile) {
-            alert("FillTextarea No tempfile: "+tmpfile);
+            textoError("FillTextarea No tempfile: "+tmpfile);
             return false;
         }
         node.removeEventListener('focus', textoUpdateTextarea, false);
