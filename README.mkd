@@ -1,10 +1,14 @@
 # Texto
 
-Texto is a Firefox extension for editing the contents of HTML textareas in an
-external editor.  When the Texto icon in a textarea is clicked, the configured
-editor is opened with the textarea's contents.  When the editor is closed, the
-textarea is updated with any changes.  Icons change to show which textareas are
-being edited, and it is possible to edit many textareas at the same time.
+
+![Texto Logo](http://hopson.ws/texto/logo.png) Texto is a Firefox extension for
+editing the contents of HTML textareas in an external editor.  When the Texto
+icon in a textarea is clicked, the configured editor is opened with the
+textarea's contents.  When the editor is closed, the textarea is updated with
+any changes.  Icons change to show which textareas are being edited, and it is
+possible to edit many textareas at the same time.
+
+It is available from [addons.mozilla.org] [1]
 
 ## Simple Configuration
 
@@ -67,8 +71,16 @@ know and I'll include it here.
 ### Smultron (OS X)
 ### PSPeditor (Windows)
 
+## Building Texto ##
+
+A Makefile is included with the source code; to build a version for yourself you'll just need `make` and `zip`.
+
+    make xpi
+
+will produce the file `texto.xpi` which you can open with Firefox to install.
+
 ## History
-Texto was originally a fork of the [Mozex] [1] extension, which I stripped all the
+Texto was originally a fork of the [Mozex] [2] extension, which I stripped all the
 "extra" functionality from and bumped the `maxVersion` setting to work with
 newer Firefox releases when it became unmaintained.  Mozex appears to be
 actively maintained again, and is worth a look for folks wanting similar
@@ -91,8 +103,9 @@ customization options, new icons, and the new name "Texto"
 Older version were named "Mozex Testo" and only released on my blog/irc.  I
 changed the name to avoid "stealing" the string Mozex on the addons site.
 
-[1]: http://mozex.mozdev.org/ "Mozex"
+[1]: https://addons.mozilla.org/firefox/addon/73747 "Texto on AMO"
+[2]: http://mozex.mozdev.org/ "Mozex"
 
 
 
-<!-- vim:set syntax=mkd ts=2 sw=2 sts=2 expandtab: -->
+<!-- vim:set syntax=mkd ts=4 sw=4 sts=4 expandtab: -->
