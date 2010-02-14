@@ -54,10 +54,8 @@ function textoInit(){
         texto_os = 'win';                               /* windows */
     }
 
-    if(tmp == null && enabled == null && editor == null &&
-            args == null && file_extension == null){
-        // Never been run; set some prefs
-        texto_firstrun = true;
+    // See which prefs are missing
+    if(tmp == null){
         var default_tmpdir = "/tmp";  /* unix */
         var userEnvironment = Components.classes["@mozilla.org/process/environment;1"].
             getService(Components.interfaces.nsIEnvironment);
@@ -66,10 +64,10 @@ function textoInit(){
             default_tmpdir = userEnvironment.get("TEMP");
         }
         textoSetPref(textopref.tmpdir, default_tmpdir);
-        textoSetPref(textopref.enabled, true);
-        textoSetPref(textopref.args, "%t");
-        textoSetPref(textopref.file_extension, 'txt');
     }
+    if(enabled == null){ textoSetPref(textopref.enabled, true); }
+    if(args == null){ textoSetPref(textopref.args, '%t'); }
+    if(file_extension == null){ textoSetPref(textopref.file_extension, 'txt'); }
 }
 
 function textoGetPrefTmpdir() {
@@ -507,7 +505,6 @@ function textoError(msg) {
 }
 
 function texto_add_edit_button(node, prefs) {
-    alert("add_edit_button: " + prefs.textoOptEditor);
     var sib = node.nextSibling;
     if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('texto')) {
         var newNode = window.content.document.createElement('img');

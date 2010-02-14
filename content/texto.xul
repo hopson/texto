@@ -49,7 +49,6 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 		}
 
 		for(var i = 0; i < nodes.length; i++){
-			alert("make_edit: " + prefs.textoOptEditor);
 			texto_add_edit_button(nodes[i], prefs);
 		}
 	}
