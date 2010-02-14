@@ -19,30 +19,60 @@ instead of those above.
 Copyright (C) 2003 Tomas Styblo <tripie@cpan.org>
 */
 
-var texto_default_tmpdir = "/tmp";  /* unix */
-var texto_dir_separator = '/';      /* unix */
-var texto_os = 'unix';              /* unix */
+var texto_dir_separator;
+var texto_os;
+var texto_firstrun = false;
 
-var userEnvironment = Components.classes["@mozilla.org/process/environment;1"].getService(Components.interfaces.nsIEnvironment);
-if(userEnvironment.exists("TEMP")){
-    // use the environment TEMP dir if it exists
-    texto_default_tmpdir = userEnvironment.get("TEMP");
-}
-if (window.navigator.platform.toLowerCase().indexOf("win") != -1) {
-    texto_dir_separator = '\\';                     /* windows */
-    texto_os = 'win';                               /* windows */
-}
+var pref = "texto.default";
+var textopref = {
+    tmpdir: pref + ".tmpdir",
+    enabled: pref + ".enabled",
+    editor: pref + ".editor",
+    args: pref + ".args",
+    extension: pref + ".extension"
+};
 
 var texto_alert_error = "texto error: ";
 var texto_tmpfiles_maxage = 3600 * 24; // in seconds
 var hotKeyed = 0;
 
-function textoGetPrefTmpdir() {
-    var dir = textoReadPref("general.tmpdir");
-    if (dir == null || dir.length == 0) {
-        dir = texto_default_tmpdir;
+textoInit();
+
+function textoInit(){
+    // @todo
+    var tmp = textoReadPref(textopref.tmpdir);
+    var enabled = textoReadPref(textopref.enabled);
+    var editor = textoReadPref(textopref.editor);
+    var args = textoReadPref(textopref.args);
+    var extension = textoReadPref(textopref.extension);
+
+    texto_dir_separator = '/';      /* unix */
+    texto_os = 'unix';              /* unix */
+
+    if (window.navigator.platform.toLowerCase().indexOf("win") != -1) {
+        texto_dir_separator = '\\';                     /* windows */
+        texto_os = 'win';                               /* windows */
     }
 
+    if(tmp == null && enabled == null && editor == null && args == null){
+        // Never been run; set some prefs
+        texto_firstrun = true;
+        var default_tmpdir = "/tmp";  /* unix */
+        var userEnvironment = Components.classes["@mozilla.org/process/environment;1"].
+            getService(Components.interfaces.nsIEnvironment);
+        if(userEnvironment.exists("TEMP")){
+            // use the environment TEMP dir if it exists
+            default_tmpdir = userEnvironment.get("TEMP");
+        }
+        textoSetPref(textopref.tmpdir, default_tmpdir);
+        textoSetPref(textopref.enabled, true);
+        textoSetPref(textopref.args, "%t");
+        textoSetPref(textopref.extension, 'txt');
+    }
+}
+
+function textoGetPrefTmpdir() {
+    var dir = textoReadPref(textopref.tmpdir);
     if (! textoExistsFile(dir)) {
         textoError("temporary directory '" + dir + "' does not exist");
         return null;
@@ -52,15 +82,14 @@ function textoGetPrefTmpdir() {
 
 function textoTmpFilenameTextarea(textarea_node) {
     var tmpdir = textoGetPrefTmpdir();
+    alert(tmpdir);
     if (tmpdir) {
         var d = new Date();
         return tmpdir + texto_dir_separator + "texto.textarea." + 
            hex_md5(textarea_node.ownerDocument.URL + ':' + 
-                   textarea_node.getAttribute("name")) + ".txt";
+                   textarea_node.getAttribute("name")) + "." + textoReadPref('extension');
     }
-    else {
-        return null;
-    }
+    else { return null; }
 }
 
 function textoHandleMouseDown(evt) {
@@ -276,24 +305,28 @@ function textoRunProgram(context, cmd, esc, node) {
     return true;
 }
 
-function textoStartEditor(event, prefs) {
+function textoStartEditor(node, target, prefs) {
+    /*
     if(event.target.tagName == "IMG"){
         var target = event.target.parentNode;
     } else {
         var target = event.target;
     }
     var node = target.nextSibling;
+    */
 
+    alert(node);
+    alert(target);
     node.setAttribute('texto-obg', node.style.background);
     node.style.background = 'url(chrome://texto/content/icon-lg-hi.png) gray no-repeat center';
     target.firstChild.setAttribute('src',"chrome://texto/content/corner-hi.png");
-    target.firstChild.setAttribute('alt',"There are Mozex edits pending on this textarea");
-    target.firstChild.setAttribute('title',"There are Mozex edits pending on this textarea");
+    target.firstChild.setAttribute('alt',"There are Texto edits pending on this textarea");
+    target.firstChild.setAttribute('title',"There are Texto edits pending on this textarea");
     node.focus();
     textoEditTextarea(node, prefs);
     node.addEventListener('focus', textoUpdateTextarea, false);
     node.addEventListener('click', textoHandleMouseDown, false);
-    if(event.preventDefault){ event.preventDefault(); }
+    //if(event.preventDefault){ event.preventDefault(); }
     return false;
 }
 
@@ -480,8 +513,7 @@ function texto_add_edit_button(node, prefs) {
     var sib = node.nextSibling;
     if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('texto')) {
         var newNode = window.content.document.createElement('a');
-
-        newNode.addEventListener("click", function(e){ return textoStartEditor(e, prefs); }, true);
+        newNode.setAttribute('class', '-texto-button');
 
         if(!hotKeyed){
             newNode.setAttribute('accesskey', 'o');
@@ -500,6 +532,49 @@ function texto_add_edit_button(node, prefs) {
         newContents.setAttribute('title','Click to edit');
         newContents.setAttribute('style','border:none;');
         newNode.appendChild(newContents);
+
+        // Now complicated event handling stuff
+        var dowhat = null;
+        if(prefs.textoOptEditor) {
+            dowhat = function(e){ return textoStartEditor(e.target.parentNode.nextSibling, e.target.parentNode, prefs); }
+        } else {
+            dowhat = function(e){
+                e.target.parentNode.setAttribute('mozexCurrent', 1);
+                var win = window.open("chrome://texto/content/pref-texto.xul", "pref-window", "chrome");
+                win.onbeforeunload = function(new_e) {
+                  	var l = e.target.ownerDocument.location;
+                    var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
+                    getDomainPrefStr(url, 'texto', function(jsonStr){
+                        new_prefs = JSON.parse(jsonStr);
+                        if(!new_prefs.textoOptEditor){
+                            new_prefs.textoOptEditor = textoReadPref(textopref.editor);
+                        }
+                        if(!new_prefs.textoOptEditor){ return false; }
+
+
+                        var tn = e.target.ownerDocument.querySelectorAll('a.-texto-button')
+                        var new_target = null;
+                        var old_textarea = e.target.parentNode.nextSibling;
+
+                        for(var i = 0; i < tn.length; i++){
+                            var clicky = newNode.cloneNode(true);
+                            if(tn[i].hasAttribute('mozexCurrent')){
+                                new_target = clicky;
+                            }
+                            clicky.addEventListener('click', function(click_e){ return textoStartEditor(click_e.target.parentNode.nextSibling, click_e.target.parentNode, new_prefs);}, true );
+                            tn[i].parentNode.replaceChild(clicky, tn[i]);
+                        }
+                        //return textoStartEditor(e, new_prefs); 
+                        // which to feed in as "old_target" is being decided
+                        textoStartEditor(old_textarea, new_target, new_prefs)
+                        return false;
+                     });
+                };
+            }
+        }
+        newNode.addEventListener("click", dowhat, true);
+
+        // add it to the DOM
         node.parentNode.insertBefore(newNode, node);
     }
 }

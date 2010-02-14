@@ -27,7 +27,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:html="http://www.w3.org/1999/xhtml"
     id="pref-texto"
-    onload="initMozexPrefPanel(document.getElementById('texto.command.defaults'));"
+    onload="initTextoPrefPanel(document.getElementById('texto.command.defaults'));"
     title="&prefs_window_title;"
     >
 

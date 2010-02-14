@@ -34,15 +34,16 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 
 	function make_edit(jsonPrefStr, doc){
 		var prefs = JSON.parse(jsonPrefStr);
-		if(typeof(prefs.textoOptEnabled) != "undefined"){ if(prefs.textoOptEnabled == false){ return; } }
-		else if(!textoReadPref("default.enabled")){ return; }
+		if(typeof(prefs.textoOptEnabled) != "undefined"){
+			if(prefs.textoOptEnabled == false){ return; }
+		} else if(!textoReadPref(textopref.enabled)) { return; }
 
 		hotKeyed = 0;
-		if(!prefs.textoOptEditor){ prefs.textoOptEditor = textoReadPref("default.editor"); }
-		if(!prefs.textoOptArgs){ prefs.textoOptArgs = textoReadPref("default.args"); }
+		if(!prefs.textoOptEditor){ prefs.textoOptEditor = textoReadPref(textopref.editor); }
+		if(!prefs.textoOptArgs){ prefs.textoOptArgs = textoReadPref(textopref.args); }
 
 		// automatically quote executables with spaces in the name:
-		if(prefs.textoOptEditor.indexOf(" ") != -1){
+		if(prefs.textoOptEditor && prefs.textoOptEditor.indexOf(" ") != -1){
 			prefs.textoOptEditor = "\"" + prefs.textoOptEditor + "\"";
 		}
 
@@ -52,6 +53,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 		} else {
 			nodes = doc.querySelectorAll('textarea');
 		}
+
 		for(var i = 0; i < nodes.length; i++){
 			texto_add_edit_button(nodes[i], prefs);
 		}

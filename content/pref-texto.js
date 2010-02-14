@@ -42,6 +42,9 @@ function textoReadPref(name) {
             return texto_prefs.getIntPref(name);
         }
         else if (type & 32) {
+			if(name == 'texto.default.editor'){
+				alert("Returning str");
+			}
             return texto_prefs.getCharPref(name);
         }
         else {
@@ -53,18 +56,49 @@ function textoReadPref(name) {
     }
 }
 
-function initMozexPrefPanel(defaults) {
+function textoSetPref(name, value) {
+	if(name.indexOf('texto.') == 0){
+		name = name.substring('texto.'.length);
+	}
+    if (texto_prefs.prefHasUserValue(name)) {
+        var type = texto_prefs.getPrefType(name);
+        if (type & 128) {
+            return texto_prefs.setBoolPref(name, value);
+        }
+        else if (type & 64) {
+            return texto_prefs.setIntPref(name, value);
+        }
+        else if (type & 32) {
+            return texto_prefs.setCharPref(name, value);
+        }
+        else {
+            return null;
+        }
+    } else if(value) {
+		// guess the type, if there is a value
+		if(typeof(value) === 'boolean') {
+			return texto_prefs.setBoolPref(name, value);
+		} else if ( (parseInt(value) + "") == value){
+			// not using typeof so "1" is converted to int
+			return texto_prefs.setIntPref(name, parseInt(value));
+		} else {
+			return texto_prefs.setCharPref(name, value);
+		}
+    }
+}
+
+function initTextoPrefPanel(defaults) {
 	var nodes = defaults.querySelectorAll('textbox');
 	for(var i=0; i<nodes.length; i++){
 		var node = nodes.item(i);
 		node.value = textoReadPref(node.id);
-		node.addEventListener("blur", function(e){  updateMozexPref(e.target); return true; }, true);
+		node.addEventListener("blur", function(e){  updateTextoPref(e.target); return true; }, true);
 	}
 	// handle the little checkbox:
 	var gd = document.getElementById("texto.default.enabled");
 	gd.checked = textoReadPref(gd.id);
 	gd.addEventListener("command",
-			function(e){ texto_prefs.setBoolPref("default.enabled", gd.checked); return true; },
+			function(e){ textoSetPref("default.enabled", gd.checked); return true; },
 			true);
 
 	// handler for add button:
@@ -239,14 +273,14 @@ function resetDomainPrefDialog(){
 }
 
 
-function updateMozexPref(prefBox) {
+function updateTextoPref(prefBox) {
 	if(prefBox.id.indexOf('texto.') != 0){ return; }
 	var prefName = prefBox.id.substring('texto.'.length);
-	texto_prefs.setCharPref(prefName, prefBox.value);
+	textoSetPref(prefName, prefBox.value);
 }
 
-function changeMozexPrefs(el) {
-    texto_prefs.setCharPref("command.textarea", document.getElementById("prefMozexTextareaEditor").value);
+function changeTextoPrefs(el) {
+    texto_prefs.setCharPref("command.textarea", document.getElementById("prefTextoTextareaEditor").value);
 }
 
 
