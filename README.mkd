@@ -1,12 +1,11 @@
-# Texto
+# ![Texto Logo](http://hopson.ws/texto/icon.png) Texto
 
 
-![Texto Logo](http://hopson.ws/texto/logo.png) Texto is a Firefox extension for
-editing the contents of HTML textareas in an external editor.  When the Texto
-icon in a textarea is clicked, the configured editor is opened with the
-textarea's contents.  When the editor is closed, the textarea is updated with
-any changes.  Icons change to show which textareas are being edited, and it is
-possible to edit many textareas at the same time.
+Texto is a Firefox extension for editing the contents of HTML textareas in an
+external editor.  When the Texto icon in a textarea is clicked, the configured
+editor is opened with the textarea's contents.  When the editor is closed, the
+textarea is updated with any changes.  Icons change to show which textareas are
+being edited, and it is possible to edit many textareas at the same time.
 
 It is available from [addons.mozilla.org] [1]
 
