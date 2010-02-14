@@ -29,18 +29,12 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 	function check_edit(doc){
 		var l = doc.location;
 		var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
-		getDomainPrefStr(url, 'texto', function(jsonStr){ make_edit(jsonStr, doc); });
+		getMergedPrefObj(url, 'texto', function(jsonObj){ make_edit(jsonObj, doc); });
 	}
 
-	function make_edit(jsonPrefStr, doc){
-		var prefs = JSON.parse(jsonPrefStr);
-		if(typeof(prefs.textoOptEnabled) != "undefined"){
-			if(prefs.textoOptEnabled == false){ return; }
-		} else if(!textoReadPref(textopref.enabled)) { return; }
-
+	function make_edit(prefs, doc){
+		if(prefs.textoOptEnabled == false){ return; }
 		hotKeyed = 0;
-		if(!prefs.textoOptEditor){ prefs.textoOptEditor = textoReadPref(textopref.editor); }
-		if(!prefs.textoOptArgs){ prefs.textoOptArgs = textoReadPref(textopref.args); }
 
 		// automatically quote executables with spaces in the name:
 		if(prefs.textoOptEditor && prefs.textoOptEditor.indexOf(" ") != -1){
@@ -55,6 +49,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 		}
 
 		for(var i = 0; i < nodes.length; i++){
+			alert("make_edit: " + prefs.textoOptEditor);
 			texto_add_edit_button(nodes[i], prefs);
 		}
 	}

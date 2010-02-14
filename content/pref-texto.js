@@ -42,16 +42,12 @@ function textoReadPref(name) {
             return texto_prefs.getIntPref(name);
         }
         else if (type & 32) {
-			if(name == 'texto.default.editor'){
-				alert("Returning str");
-			}
             return texto_prefs.getCharPref(name);
         }
         else {
             return null;
         }
-    }
-    else {
+    } else {
         return null;
     }
 }
@@ -327,6 +323,25 @@ function getExtensionPrefList(extension, callback){
 			else { if(GLOBAL_QUERY_STATUS_THINGY == 0){ callback(Array()); } else GLOBAL_QUERY_STATUS_THINGY = 0; }
 			},
 	});
+}
+
+function getMergedPrefObj(domain, extension, callback){
+	getDomainPrefStr(domain, extension, function(jsonStr){
+			jsonObj = JSON.parse(jsonStr);
+			alert("getMergedPrefObj (" + domain + ") " + jsonObj.textoOptEditor);
+			if(jsonObj.textoOptEnabled == null)
+				jsonObj.textoOptEnabled = textoReadPref('texto.default.enabled');
+			if(jsonObj.textoOptEditor == null);
+				jsonObj.textoOptEditor = textoReadPref('texto.default.editor');
+			if(jsonObj.textoOptArgs == null);
+				jsonObj.textoOptArgs = textoReadPref('texto.default.args');
+			if(jsonObj.textoOptExtension == null)
+				jsonObj.textoOptExtension = textoReadPref('texto.default.file_extension');
+			if(jsonObj.textoOptTmpDir == null)
+				jsonObj.textoOptTmpDir = textoReadPref('texto.default.tmpdir');
+			callback(jsonObj);
+	});
+
 }
 
 function getDomainPrefStr(domain, extension, callback){

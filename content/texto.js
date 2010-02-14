@@ -29,7 +29,7 @@ var textopref = {
     enabled: pref + ".enabled",
     editor: pref + ".editor",
     args: pref + ".args",
-    extension: pref + ".extension"
+    file_extension: pref + ".file_extension"
 };
 
 var texto_alert_error = "texto error: ";
@@ -44,7 +44,7 @@ function textoInit(){
     var enabled = textoReadPref(textopref.enabled);
     var editor = textoReadPref(textopref.editor);
     var args = textoReadPref(textopref.args);
-    var extension = textoReadPref(textopref.extension);
+    var file_extension = textoReadPref(textopref.file_extension);
 
     texto_dir_separator = '/';      /* unix */
     texto_os = 'unix';              /* unix */
@@ -54,7 +54,8 @@ function textoInit(){
         texto_os = 'win';                               /* windows */
     }
 
-    if(tmp == null && enabled == null && editor == null && args == null){
+    if(tmp == null && enabled == null && editor == null &&
+            args == null && file_extension == null){
         // Never been run; set some prefs
         texto_firstrun = true;
         var default_tmpdir = "/tmp";  /* unix */
@@ -67,7 +68,7 @@ function textoInit(){
         textoSetPref(textopref.tmpdir, default_tmpdir);
         textoSetPref(textopref.enabled, true);
         textoSetPref(textopref.args, "%t");
-        textoSetPref(textopref.extension, 'txt');
+        textoSetPref(textopref.file_extension, 'txt');
     }
 }
 
@@ -82,12 +83,11 @@ function textoGetPrefTmpdir() {
 
 function textoTmpFilenameTextarea(textarea_node) {
     var tmpdir = textoGetPrefTmpdir();
-    alert(tmpdir);
     if (tmpdir) {
         var d = new Date();
         return tmpdir + texto_dir_separator + "texto.textarea." + 
            hex_md5(textarea_node.ownerDocument.URL + ':' + 
-                   textarea_node.getAttribute("name")) + "." + textoReadPref('extension');
+                   textarea_node.getAttribute("name")) + "." + textoReadPref(textopref.file_extension);
     }
     else { return null; }
 }
@@ -315,13 +315,11 @@ function textoStartEditor(node, target, prefs) {
     var node = target.nextSibling;
     */
 
-    alert(node);
-    alert(target);
     node.setAttribute('texto-obg', node.style.background);
     node.style.background = 'url(chrome://texto/content/icon-lg-hi.png) gray no-repeat center';
-    target.firstChild.setAttribute('src',"chrome://texto/content/corner-hi.png");
-    target.firstChild.setAttribute('alt',"There are Texto edits pending on this textarea");
-    target.firstChild.setAttribute('title',"There are Texto edits pending on this textarea");
+    target.setAttribute('src',"chrome://texto/content/corner-hi.png");
+    target.setAttribute('alt',"There are Texto edits pending on this textarea");
+    target.setAttribute('title',"There are Texto edits pending on this textarea");
     node.focus();
     textoEditTextarea(node, prefs);
     node.addEventListener('focus', textoUpdateTextarea, false);
@@ -390,10 +388,10 @@ function textoFillTextarea(node, delFile) {
                 textoDeleteFile(tmpfile);
                 /* update the image to show we're not longer editing */
                 var sib = node.previousSibling;
-                if(sib != null && sib.hasAttribute('texto') && sib.hasChildNodes()) {
-                    sib.firstChild.setAttribute('src',"chrome://texto/content/corner.png");
-                    sib.firstChild.setAttribute('alt',"Click to edit");
-                    sib.firstChild.setAttribute('title',"Click to edit");
+                if(sib != null && sib.hasAttribute('texto') && sib.tagName == 'IMG') {
+                    sib.setAttribute('src',"chrome://texto/content/corner.png");
+                    sib.setAttribute('alt',"Click to edit");
+                    sib.setAttribute('title',"Click to edit");
 
                     if(node.hasAttribute('texto-obg')) {
                         node.style.background = node.getAttribute('texto-obg');
@@ -509,10 +507,10 @@ function textoError(msg) {
 }
 
 function texto_add_edit_button(node, prefs) {
-
+    alert("add_edit_button: " + prefs.textoOptEditor);
     var sib = node.nextSibling;
     if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('texto')) {
-        var newNode = window.content.document.createElement('a');
+        var newNode = window.content.document.createElement('img');
         newNode.setAttribute('class', '-texto-button');
 
         if(!hotKeyed){
@@ -520,48 +518,36 @@ function texto_add_edit_button(node, prefs) {
             hotKeyed++;
         }
         newNode.setAttribute('texto',true);
-        newNode.setAttribute('href','#');
         newNode.setAttribute('title','Click to edit');
         newNode.setAttribute('style','display:inline-block; border:solid 1px #999; padding: 2px 4px; margin-top: 4px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 27) );
 
-        var newContents = window.content.document.createElement('img');
-        newContents.setAttribute('src','chrome://texto/content/corner.png');
-        newContents.addEventListener('mouseover', function(e){  e.target.src = 'chrome://texto/content/corner-hi.png'; e.target.parentNode.style.background = '#BBC'; return true; }, true);
-        newContents.addEventListener('mouseout', function(e){ e.target.src = 'chrome://texto/content/corner.png'; e.target.parentNode.style.background = '#DDD'; return true; }, true);
-        newContents.setAttribute('alt','Click to edit');
-        newContents.setAttribute('title','Click to edit');
-        newContents.setAttribute('style','border:none;');
-        newNode.appendChild(newContents);
-
+        newNode.setAttribute('src','chrome://texto/content/corner.png');
+        newNode.addEventListener('mouseover', function(e){  e.target.src = 'chrome://texto/content/corner-hi.png'; e.target.style.background = '#BBC'; return true; }, true);
+        newNode.addEventListener('mouseout', function(e){ e.target.src = 'chrome://texto/content/corner.png'; e.target.style.background = '#DDD'; return true; }, true);
         // Now complicated event handling stuff
         var dowhat = null;
         if(prefs.textoOptEditor) {
-            dowhat = function(e){ return textoStartEditor(e.target.parentNode.nextSibling, e.target.parentNode, prefs); }
+            dowhat = function(e){ return textoStartEditor(e.target.nextSibling, e.target, prefs); }
         } else {
             dowhat = function(e){
-                e.target.parentNode.setAttribute('mozexCurrent', 1);
+                e.target.setAttribute('mozexCurrent', 1);
                 var win = window.open("chrome://texto/content/pref-texto.xul", "pref-window", "chrome");
                 win.onbeforeunload = function(new_e) {
                   	var l = e.target.ownerDocument.location;
                     var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
-                    getDomainPrefStr(url, 'texto', function(jsonStr){
-                        new_prefs = JSON.parse(jsonStr);
-                        if(!new_prefs.textoOptEditor){
-                            new_prefs.textoOptEditor = textoReadPref(textopref.editor);
-                        }
+                    getMergedPrefObj(url, 'texto', function(new_prefs){
                         if(!new_prefs.textoOptEditor){ return false; }
 
-
-                        var tn = e.target.ownerDocument.querySelectorAll('a.-texto-button')
+                        var tn = e.target.ownerDocument.querySelectorAll('img.-texto-button')
                         var new_target = null;
-                        var old_textarea = e.target.parentNode.nextSibling;
+                        var old_textarea = e.target.nextSibling;
 
                         for(var i = 0; i < tn.length; i++){
                             var clicky = newNode.cloneNode(true);
                             if(tn[i].hasAttribute('mozexCurrent')){
                                 new_target = clicky;
                             }
-                            clicky.addEventListener('click', function(click_e){ return textoStartEditor(click_e.target.parentNode.nextSibling, click_e.target.parentNode, new_prefs);}, true );
+                            clicky.addEventListener('click', function(click_e){ return textoStartEditor(click_e.target.nextSibling, click_e.target, new_prefs);}, true );
                             tn[i].parentNode.replaceChild(clicky, tn[i]);
                         }
                         //return textoStartEditor(e, new_prefs); 
