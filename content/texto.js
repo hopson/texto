@@ -23,19 +23,11 @@ var texto_dir_separator;
 var texto_os;
 var texto_firstrun = false;
 
-var pref = "texto.default";
-var textopref = {
-    tmpdir: pref + ".tmpdir",
-    enabled: pref + ".enabled",
-    editor: pref + ".editor",
-    args: pref + ".args",
-    file_extension: pref + ".file_extension"
-};
-
 var texto_alert_error = "texto error: ";
 var texto_tmpfiles_maxage = 3600 * 24; // in seconds
 var hotKeyed = 0;
 
+// check version
 textoInit();
 
 function textoInit(){
@@ -60,7 +52,6 @@ function textoInit(){
         var userEnvironment = Components.classes["@mozilla.org/process/environment;1"].
             getService(Components.interfaces.nsIEnvironment);
         if(userEnvironment.exists("TEMP")){
-            // use the environment TEMP dir if it exists
             default_tmpdir = userEnvironment.get("TEMP");
         }
         textoSetPref(textopref.tmpdir, default_tmpdir);
@@ -115,7 +106,7 @@ function textoPurgeTmpdir() {
         var f = files.getNext();
         f.QueryInterface(Components.interfaces.nsIFile);
         var d = new Date();
-        if ((f.leafName.substr(0, 5) == "texto") &&
+        if ((f.leafName.indexOf('texto') == 0) &&
             (d.getTime() - f.lastModifiedTime > texto_tmpfiles_maxage * 1000)) {
             try {
                 f.remove(false);
@@ -532,7 +523,7 @@ function texto_add_edit_button(node, prefs) {
                 win.onbeforeunload = function(new_e) {
                   	var l = e.target.ownerDocument.location;
                     var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
-                    getMergedPrefObj(url, 'texto', function(new_prefs){
+                    getMergedPrefObj(url,'texto', function(new_prefs){
                         if(!new_prefs.textoOptEditor){ return false; }
 
                         var tn = e.target.ownerDocument.querySelectorAll('img.-texto-button')
@@ -561,3 +552,31 @@ function texto_add_edit_button(node, prefs) {
         node.parentNode.insertBefore(newNode, node);
     }
 }
+function check_edit(doc){
+    var l = doc.location;
+    var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
+    getMergedPrefObj(url, 'texto', function(jsonObj){ make_edit(jsonObj, doc); });
+}
+
+function make_edit(prefs, doc){
+    if(prefs.textoOptEnabled == false){ return; }
+    hotKeyed = 0;
+
+    // automatically quote executables with spaces in the name:
+    if(prefs.textoOptEditor && prefs.textoOptEditor.indexOf(" ") != -1){
+        prefs.textoOptEditor = "\"" + prefs.textoOptEditor + "\"";
+    }
+
+    var nodes;
+    if(prefs.textoOptAuto){
+        nodes = doc.querySelectorAll(prefs.textoOptAuto);
+    } else {
+        nodes = doc.querySelectorAll('textarea');
+    }
+
+    for(var i = 0; i < nodes.length; i++){
+        texto_add_edit_button(nodes[i], prefs);
+    }
+}
+
+

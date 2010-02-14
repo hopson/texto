@@ -26,33 +26,6 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     <script type="application/x-javascript" src="texto.js"/>
 	<script type="application/x-javascript">
 	<![CDATA[
-	function check_edit(doc){
-		var l = doc.location;
-		var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);
-		getMergedPrefObj(url, 'texto', function(jsonObj){ make_edit(jsonObj, doc); });
-	}
-
-	function make_edit(prefs, doc){
-		if(prefs.textoOptEnabled == false){ return; }
-		hotKeyed = 0;
-
-		// automatically quote executables with spaces in the name:
-		if(prefs.textoOptEditor && prefs.textoOptEditor.indexOf(" ") != -1){
-			prefs.textoOptEditor = "\"" + prefs.textoOptEditor + "\"";
-		}
-
-		var nodes;
-		if(prefs.textoOptAuto){
-			nodes = doc.querySelectorAll(prefs.textoOptAuto);
-		} else {
-			nodes = doc.querySelectorAll('textarea');
-		}
-
-		for(var i = 0; i < nodes.length; i++){
-			texto_add_edit_button(nodes[i], prefs);
-		}
-	}
-
 	var b = getBrowser();
 	if(b.tabContainer){
 		for(var i = 0; i < b.tabContainer.itemCount; i++){

@@ -20,12 +20,25 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 var texto_prefs = Components.classes["@mozilla.org/preferences-service;1"].
     getService(Components.interfaces.nsIPrefService).getBranch("texto.");
 var dbConn = null;
-var texto_domain_prefs = null;
 var GLOBAL_QUERY_STATUS_THINGY = 0;
+
+// borrowed from FUEL
+// see http://doxygen.db48x.net/mozilla/html/interfacensIExtensionManager.html
+var myinfo = Components.classes["@mozilla.org/extensions/manager;1"].getService(Components.interfaces.nsIExtensionManager).getItemForID('texto@hopson.ws');
+//for(var thing in myinfo){ alert(thing + ": " + myinfo[thing]); }
+
+var pref = "texto.default";
+var textopref = {
+    tmpdir: pref + ".tmpdir",
+    enabled: pref + ".enabled",
+    editor: pref + ".editor",
+    args: pref + ".args",
+    file_extension: pref + ".file_extension"
+};
 
 /* DEBUG */
 var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
-                                   .getService(Components.interfaces.nsIConsoleService);
+                    .getService(Components.interfaces.nsIConsoleService);
 /* END DEBUG */
 
 function textoReadPref(name) {
@@ -212,7 +225,6 @@ function initDomainListing(focusEl){
 	if(lb == null){ return; }
 	getExtensionPrefList('texto',
 		function(prefList){
-			texto_domain_prefs = prefList;
 			while(lb.hasChildNodes()){
 				lb.removeChild(lb.firstChild);
 			}
@@ -329,19 +341,19 @@ function getMergedPrefObj(domain, extension, callback){
 	getDomainPrefStr(domain, extension, function(jsonStr){
 			jsonObj = JSON.parse(jsonStr);
 			if(jsonObj.textoOptEnabled == null) {
-				jsonObj.textoOptEnabled = textoReadPref('texto.default.enabled');
+				jsonObj.textoOptEnabled = textoReadPref(textopref.enabled);
 			}
 			if(jsonObj.textoOptEditor == null) {
-				jsonObj.textoOptEditor = textoReadPref('texto.default.editor');
+				jsonObj.textoOptEditor = textoReadPref(textopref.editor);
 			}
 			if(jsonObj.textoOptArgs == null) {
-				jsonObj.textoOptArgs = textoReadPref('texto.default.args');
+				jsonObj.textoOptArgs = textoReadPref(textopref.args);
 			}
 			if(jsonObj.textoOptExtension == null) {
-				jsonObj.textoOptExtension = textoReadPref('texto.default.file_extension');
+				jsonObj.textoOptExtension = textoReadPref(textopref.file_extension);
 			}
 			if(jsonObj.textoOptTmpDir == null) {
-				jsonObj.textoOptTmpDir = textoReadPref('texto.default.tmpdir');
+				jsonObj.textoOptTmpDir = textoReadPref(textopref.tmpdir);
 			}
 			callback(jsonObj);
 	});
