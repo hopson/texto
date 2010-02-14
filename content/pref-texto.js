@@ -334,16 +334,16 @@ function getMergedPrefObj(domain, extension, callback){
         if(jsonObj.textoOptEnabled == null) {
             jsonObj.textoOptEnabled = textoReadPref(textopref.enabled);
         }
-        if(jsonObj.textoOptEditor == null) {
+        if(jsonObj.textoOptEditor == null || jsonObj.textoOptEditor == '') {
             jsonObj.textoOptEditor = textoReadPref(textopref.editor);
         }
-        if(jsonObj.textoOptArgs == null) {
+        if(jsonObj.textoOptArgs == null || jsonObj.textoOptArgs == '') {
             jsonObj.textoOptArgs = textoReadPref(textopref.args);
         }
-        if(jsonObj.textoOptExtension == null) {
+        if(jsonObj.textoOptExtension == null || jsonObj.textoOptExtension == '') {
             jsonObj.textoOptExtension = textoReadPref(textopref.file_extension);
         }
-        if(jsonObj.textoOptTmpDir == null) {
+        if(jsonObj.textoOptTmpDir == null || jsonObj.textoOptTmpDir == '') {
             jsonObj.textoOptTmpDir = textoReadPref(textopref.tmpdir);
         }
         callback(jsonObj);
