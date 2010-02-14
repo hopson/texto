@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- vim:set ts=4 sw=4 sts=4 expandtab: -->
 <!--
 The contents of this file are subject to the Mozilla Public
 License Version 1.1 (the "License"); you may not use this file
@@ -25,7 +26,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     <treechildren id="panelChildren">
         <treeitem id="texto">
             <treerow>
-				<treecell url="chrome://texto/content/pref-texto.xul" label="texto"/>
+                <treecell url="chrome://texto/content/pref-texto.xul" label="texto"/>
             </treerow>
         </treeitem>
     </treechildren>

@@ -267,11 +267,11 @@ function textoRunProgram(context, cmd, esc, node) {
 
         // Create an observer:
         observer = {
-			observe: function(subject, topic, data){ 
-				evt = document.createEvent("MouseEvents");
-				evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-				node.dispatchEvent(evt);
-			},
+            observe: function(subject, topic, data){ 
+                evt = document.createEvent("MouseEvents");
+                evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                node.dispatchEvent(evt);
+            },
             register: function() {
                 var observerService = Components.classes["@mozilla.org/observer-service;1"]
                     .getService(Components.interfaces.nsIObserverService);
@@ -295,14 +295,6 @@ function textoRunProgram(context, cmd, esc, node) {
 }
 
 function textoStartEditor(node, target, prefs) {
-    /*
-    if(event.target.tagName == "IMG"){
-        var target = event.target.parentNode;
-    } else {
-        var target = event.target;
-    }
-    var node = target.nextSibling;
-    */
 
     node.setAttribute('texto-obg', node.style.background);
     node.style.background = 'url(chrome://texto/content/icon-lg-hi.png) gray no-repeat center';
@@ -313,7 +305,6 @@ function textoStartEditor(node, target, prefs) {
     textoEditTextarea(node, prefs);
     node.addEventListener('focus', textoUpdateTextarea, false);
     node.addEventListener('click', textoHandleMouseDown, false);
-    //if(event.preventDefault){ event.preventDefault(); }
     return false;
 }
 
@@ -321,9 +312,7 @@ function textoEditTextarea(node, prefs) {
     textoPurgeTmpdir();
 
     var tmpfile = textoTmpFilenameTextarea(node);
-    if (! tmpfile) {
-        return;
-    }
+    if (! tmpfile) { return; }
 
     if (node) {
         if (textoExistsFile(tmpfile)) {
@@ -331,25 +320,19 @@ function textoEditTextarea(node, prefs) {
                           "Do you want to start another instance of the editor ?\n" + 
                           "All data written in the previous instance will be lost.")) {
                 textoDeleteFile(tmpfile);
-            }
-            else {
-                return;
-            }
+            } else { return; }
         }
         if (textoWriteFile(node.value, tmpfile)) {
             // run the editor
             var esc = {
                 't': tmpfile,
-				'h': node.ownerDocument.location.host,
+                'h': node.ownerDocument.location.host,
             };
             if (! textoRunProgram("edit textarea", prefs.textoOptEditor + " " + prefs.textoOptArgs, esc, node)) {
                 textoDeleteFile(tmpfile);
             }
         }
-    }
-    else {
-        textoError("no textarea node found");
-    }
+    } else { textoError("no textarea node found"); }
 }
 
 function textoUpdateTextarea(event) {
@@ -393,7 +376,6 @@ function textoFillTextarea(node, delFile) {
     } else {
         node.removeEventListener('focus', textoUpdateTextarea, false);
         node.removeEventListener('click', textoHandleMouseDown, false);
-
         return false;
     }
 }
@@ -538,9 +520,8 @@ function texto_add_edit_button(node, prefs) {
                             clicky.addEventListener('click', function(click_e){ return textoStartEditor(click_e.target.nextSibling, click_e.target, new_prefs);}, true );
                             tn[i].parentNode.replaceChild(clicky, tn[i]);
                         }
-                        //return textoStartEditor(e, new_prefs); 
-                        // which to feed in as "old_target" is being decided
-                        textoStartEditor(old_textarea, new_target, new_prefs)
+                        // kick off the pending edit action, if possible:
+                        if(new_target){ textoStartEditor(old_textarea, new_target, new_prefs); }
                         return false;
                      });
                 };
@@ -552,6 +533,7 @@ function texto_add_edit_button(node, prefs) {
         node.parentNode.insertBefore(newNode, node);
     }
 }
+
 function check_edit(doc){
     var l = doc.location;
     var url = l.href.substr(l.href.indexOf(l.protocol) + l.protocol.length + 2);

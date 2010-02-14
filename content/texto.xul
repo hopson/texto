@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- vim:set ts=4 sw=4 sts=4 expandtab: -->
 <!--
 The contents of this file are subject to the Mozilla Public
 License Version 1.1 (the "License"); you may not use this file
@@ -22,20 +23,20 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
     <script type="application/x-javascript" src="md5.js"/>
-	<script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
+    <script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
     <script type="application/x-javascript" src="texto.js"/>
-	<script type="application/x-javascript">
-	<![CDATA[
-	var b = getBrowser();
-	if(b.tabContainer){
-		for(var i = 0; i < b.tabContainer.itemCount; i++){
-			var t = b.tabContainer.getItemAtIndex(i);
-			t.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true);
-			}
-	}
-	b.addEventListener('TabOpen', function(e){ e.originalTarget.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true); return true; }, true);
+    <script type="application/x-javascript">
+        <![CDATA[
+        var b = getBrowser();
+        if(b.tabContainer){
+        for(var i = 0; i < b.tabContainer.itemCount; i++){
+        var t = b.tabContainer.getItemAtIndex(i);
+        t.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true);
+        }
+        }
+        b.addEventListener('TabOpen', function(e){ e.originalTarget.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true); return true; }, true);
 
-	]]>
-	</script>
+        ]]>
+    </script>
 </overlay>
 
