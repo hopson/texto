@@ -6,7 +6,7 @@
 
         <em:id>texto@hopson.ws</em:id>
         <em:name>Texto</em:name>
-        <em:version>3.1.0</em:version>
+        <em:version>3.1.1</em:version>
         <em:description>Open textareas in an external application</em:description>
         <em:creator>Based on Mozex by Eric Hamiter, Paolo Kaosmos, Vladimir Marek; tweaks by Robert Hopson and Scott McCammon of the OSUOSL</em:creator>
         <em:targetApplication>
