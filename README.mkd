@@ -15,8 +15,8 @@ Choose your editor by typing its path directory in the "Default Editor" box, or
 use the **Open...** button to browse for an editor.
 
 Default arguments are command-line options passed to your editor.  The initial
-setting, *%t*, is a placeholder for the temporary file created by Texto.  You may
-add extra command-line options, but *%t* should usually be the last one.
+setting, `%t`, is a placeholder for the temporary file created by Texto.  You may
+add extra command-line options, but `%t` should usually be the last one.
 
 By default, the extension is enabled on every website with a textarea tag.
 If you don't want this behavior, uncheck the **Globally Enabled** box and
@@ -32,10 +32,10 @@ currently selected domain.
 
 To setup a new domain, enter its name in the **Add Domain** box, click add, then
 fill out any options you want to be different from the *Global* options on the
-right and click **Save**.  Any unset options except *Enabled* will default to the
-Global setting.  If the *Enabled* option is not set for a domain, then Texto
+right and click **Save**.  Any unset options except **Enabled** will default to the
+Global setting.  If the **Enabled** option is not set for a domain, then Texto
 will not run on that domain.  Use this to exclude websites such as *google.com*
-or *facebook.com* where Texto icons aren't useful.
+or *facebook.com*, where Texto icons aren't useful.
 
 Be sure to click **Save** after making changes.
 
@@ -47,10 +47,10 @@ There are some configuration options not available on the Preferences screen.
 You can view these by opening the URL **about:config** and entering *texto* in
 the Filter box.  Right now the configurable options are:
 
-* **texto.default.file_extension** - the file extension to use for temp files.
+* `texto.default.file_extension` - the file extension to use for temp files.
   Changing this to "html" might enable your text editor's syntax highlighting,
   for example.
-* **texto.default.tmpdir** - Directory to use for storing tmp files while being
+* `texto.default.tmpdir` - Directory to use for storing tmp files while being
   edited.  This should be detected correctly, but if you want to point it
   somewhere else you may.
 
@@ -69,7 +69,7 @@ know and I'll include it here.
 
 ## History
 Texto was originally a fork of the [Mozex] [1] extension, which I stripped all the
-"extra" functionality from and bumped the "maxVersion" setting to work with
+"extra" functionality from and bumped the `maxVersion` setting to work with
 newer Firefox releases when it became unmaintained.  Mozex appears to be
 actively maintained again, and is worth a look for folks wanting similar
 functionality.  Another great alternative is It's All Text.  If you know of
