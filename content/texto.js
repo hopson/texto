@@ -70,18 +70,17 @@ function textoGetPrefTmpdir() {
     return dir;
 }
 
-function textoTmpFilenameTextarea(textarea_node) {
-    var tmpdir = textoGetPrefTmpdir();
+function textoTmpFilenameTextarea(textarea_node, prefs) {
+    var tmpdir = prefs.textoOptTmpDir;
     if (tmpdir) {
-        var d = new Date();
         return tmpdir + texto_dir_separator + "texto.textarea." + 
            hex_md5(textarea_node.ownerDocument.URL + ':' + 
-                   textarea_node.getAttribute("name")) + "." + textoReadPref(textopref.file_extension);
+                   textarea_node.getAttribute("name")) + "." + prefs.textoOptExtension;
     }
     else { return null; }
 }
 
-function textoHandleMouseDown(evt) {
+function textoHandleMouseDown(evt, prefs) {
     var elem_type = null;
     var link_type = null;
     for(var node = evt.originalTarget; node != null; node = node.parentNode) {
@@ -89,8 +88,9 @@ function textoHandleMouseDown(evt) {
             elem_type = node.localName.toUpperCase();
             if (elem_type == "TEXTAREA") {
                 if (evt.button == 0 && 
-                        textoExistsFile(textoTmpFilenameTextarea(node))) {
-                    textoFillTextarea(node, true);
+                        textoExistsFile(textoTmpFilenameTextarea(node, prefs))) {
+                    textoFillTextarea(node, prefs, true);
+                    node.removeEventListener('click', arguments.callee.caller, false);
                     return false;
                 }
                 break;
@@ -303,15 +303,15 @@ function textoStartEditor(node, target, prefs) {
     target.setAttribute('title',"There are Texto edits pending on this textarea");
     node.focus();
     textoEditTextarea(node, prefs);
-    node.addEventListener('focus', textoUpdateTextarea, false);
-    node.addEventListener('click', textoHandleMouseDown, false);
+    node.addEventListener('focus', function(e){ textoUpdateTextarea(e, prefs); }, false);
+    node.addEventListener('click', function(e){ textoHandleMouseDown(e, prefs); }, false);
     return false;
 }
 
 function textoEditTextarea(node, prefs) {
     textoPurgeTmpdir();
 
-    var tmpfile = textoTmpFilenameTextarea(node);
+    var tmpfile = textoTmpFilenameTextarea(node, prefs);
     if (! tmpfile) { return; }
 
     if (node) {
@@ -335,21 +335,24 @@ function textoEditTextarea(node, prefs) {
     } else { textoError("no textarea node found"); }
 }
 
-function textoUpdateTextarea(event) {
-    textoFillTextarea(event.target, false);
+function textoUpdateTextarea(event, prefs) {
+    textoFillTextarea(event.target, prefs, false);
     if(event.preventDefault){ event.preventDefault(); }
+    if(! event.target.hasAttribute('texto-obg')){
+        event.target.removeEventListener('focus', arguments.callee.caller, false);
+    }
     return false;
 }
 
-function textoFillTextarea(node, delFile) {
-    var tmpfile = textoTmpFilenameTextarea(node);
+function textoFillTextarea(node, prefs, delFile) {
+    var tmpfile = textoTmpFilenameTextarea(node, prefs);
     if (delFile ) {
         if(! tmpfile) {
             textoError("FillTextarea No tempfile: "+tmpfile);
             return false;
         }
-        node.removeEventListener('focus', textoUpdateTextarea, false);
-        node.removeEventListener('click', textoHandleMouseDown, false);
+        //node.removeEventListener('focus', textoUpdateTextarea, false);
+        //node.removeEventListener('click', textoHandleMouseDown, false);
     }
 
     if (node && textoExistsFile(tmpfile)) {
@@ -374,8 +377,6 @@ function textoFillTextarea(node, delFile) {
         }
         return true;
     } else {
-        node.removeEventListener('focus', textoUpdateTextarea, false);
-        node.removeEventListener('click', textoHandleMouseDown, false);
         return false;
     }
 }
@@ -561,4 +562,13 @@ function make_edit(prefs, doc){
     }
 }
 
-
+function loadTexto() {
+    var b = getBrowser();
+    if(b.tabContainer){
+        for(var i = 0; i < b.tabContainer.itemCount; i++){
+            var t = b.tabContainer.getItemAtIndex(i);
+            t.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true);
+        }
+    }
+    b.addEventListener('TabOpen', function(e){ e.originalTarget.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true); return true; }, true);
+}

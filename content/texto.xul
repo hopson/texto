@@ -26,17 +26,7 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     <script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
     <script type="application/x-javascript" src="texto.js"/>
     <script type="application/x-javascript">
-        <![CDATA[
-        var b = getBrowser();
-        if(b.tabContainer){
-        for(var i = 0; i < b.tabContainer.itemCount; i++){
-        var t = b.tabContainer.getItemAtIndex(i);
-        t.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true);
-        }
-        }
-        b.addEventListener('TabOpen', function(e){ e.originalTarget.linkedBrowser.addEventListener('load', function(ev){ if(ev.target.location != "about:blank") check_edit(ev.target); return true; }, true); return true; }, true);
-
-        ]]>
+        <![CDATA[ loadTexto(); ]]>
     </script>
 </overlay>
 

@@ -4,6 +4,7 @@
 <!ENTITY prefs_open_appbrowser "Open...">
 <!ENTITY prefs_default_arguments "Default Arguments">
 <!ENTITY prefs_placeholder_filename "Filename">
+<!ENTITY prefs_placeholder_file_extension "File Extension">
 <!ENTITY prefs_placeholder_hostname "Hostname">
 <!ENTITY prefs_globally_enabled_flag "Globally Enabled">
 <!ENTITY prefs_domain_settings "Domain Specific Options">
@@ -14,5 +15,4 @@
 <!ENTITY prefs_arguments "Args">
 <!ENTITY prefs_css_selector "Selector">
 <!ENTITY prefs_enabled "Enabled">
-<!ENTITY prefs_save "Save">
 <!ENTITY prefs_delete "Delete">

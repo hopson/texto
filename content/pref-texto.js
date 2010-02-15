@@ -34,13 +34,25 @@ var textopref = {
     enabled: pref + ".enabled",
     editor: pref + ".editor",
     args: pref + ".args",
-    file_extension: pref + ".file_extension"
+    file_extension: pref + ".file_extension",
+    selector: pref + ".selector"
+};
+
+var textoDomainPrefs = {
+    textoOptEditor: { val: 'value', watch: 'blur', default: '', global: textopref.editor},
+    textoOptArgs: { val: 'value', watch: 'blur', default: '', global: textopref.args},
+    textoOptAuto: { val: 'value', watch: 'blur', default: '', global: textopref.selector},
+    textoOptEnabled: { val: 'checked', watch: 'command', default: false, global: textopref.enabled },
+    textoOptExtension: { val: 'value', watch: 'blur', default: '', global: textopref.file_extension },
+    textoOptTmpDir: { val: 'value', watch: 'blur', default: '', global: textopref.tmpdir }
 };
 
 /* DEBUG */
 var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
                     .getService(Components.interfaces.nsIConsoleService);
 /* END DEBUG */
+
+function $(id){ return document.getElementById(id); }
 
 function textoReadPref(name) {
     if(name.indexOf('texto.') == 0){
@@ -49,21 +61,11 @@ function textoReadPref(name) {
 
     if (texto_prefs.prefHasUserValue(name)) {
         var type = texto_prefs.getPrefType(name);
-        if (type & 128) {
-            return texto_prefs.getBoolPref(name);
-        }
-        else if (type & 64) {
-            return texto_prefs.getIntPref(name);
-        }
-        else if (type & 32) {
-            return texto_prefs.getCharPref(name);
-        }
-        else {
-            return null;
-        }
-    } else {
-        return null;
-    }
+        if (type & 128) { return texto_prefs.getBoolPref(name); }
+        else if (type & 64) { return texto_prefs.getIntPref(name); }
+        else if (type & 32) { return texto_prefs.getCharPref(name); }
+        else { return null; }
+    } else { return null; }
 }
 
 function textoSetPref(name, value) {
@@ -96,67 +98,86 @@ function initTextoPrefPanel(defaults) {
         node.addEventListener("blur", function(e){  updateTextoPref(e.target); return true; }, true);
     }
     // handle the little checkbox:
-    var gd = document.getElementById("texto.default.enabled");
+    var gd = $("texto.default.enabled");
     gd.checked = textoReadPref(gd.id);
     gd.addEventListener("command",
             function(e){ textoSetPref("default.enabled", gd.checked); return true; },
             true);
 
     // handler for add button:
-    var addButt = document.getElementById("texto.domain.add");
-    var domainField = document.getElementById("texto.domain.new");
+    var addButt = $("texto.domain.add");
+    var domainField = $("texto.domain.new");
     addButt.addEventListener("command",
             function(e){
             var obj = { 'textoOptEnabled' : true };
             addExtensionPrefObj(domainField.value, 'texto', obj, function(){ insertNewDomain(domainField.value, JSON.stringify(obj), true); domainField.value = 'New Domain'; }); return true; },
             true);
-    domainField.addEventListener("focus", function(e){ domainField.value = ""; return true; }, true);
+    domainField.addEventListener("focus", function(e){ resetDomainPrefDialog(); domainField.value = ""; return true; }, true);
 
     // delete button:
-    var delButt = document.getElementById("textoOptDelete");
+    var delButt = $("textoOptDelete");
     delButt.addEventListener("command",
             function(e){
-            delDomainPref(document.getElementById("textoOptDomain").value, 'texto', function(){ var n = document.getElementById("texto.domain.list"); n.removeChild(n.childNodes[n.selectedIndex]); resetDomainPrefDialog(); });
-            return true; },
+            if(confirm("Are you sure you want to delete settings for " + $('textoOptDomain').value + "?")){
+                delDomainPref($("textoOptDomain").value, 'texto', function(){ var n = $("texto.domain.list"); n.removeChild(n.childNodes[n.selectedIndex]); resetDomainPrefDialog(); });
+                return true; }
+            else { return false } },
             true);
-    // save button:
-    var saveButt = document.getElementById("textoOptSave");
-    saveButt.addEventListener("command",
-            function(e){
-            // what we are gonna do here is save this thing
-            // get the "domain" value
-            var domain = document.getElementById("textoOptDomain").value;
-            // build the json object
-            var jsonObj = {};
-            var opts = {"textoOptEditor":'value', "textoOptArgs":'value', "textoOptAuto":'value', "textoOptEnabled":'checked'};
-            for(var o in opts){ jsonObj[o] = document.getElementById(o)[opts[o]]; }
-            var jsonStr = JSON.stringify(jsonObj);
-            // save it all
-            addDomainPrefStr(
-                domain,
-                'texto',
-                jsonStr,
-                function(){
-                var list = document.getElementById('texto.domain.list');
-                list.childNodes[list.selectedIndex].value = jsonStr;
-                });
-            return true;
-            },
-            true);
-
     // browse for app dialog
-    var appButt = document.getElementById("texto.default.editorbrowse");
+    var appButt = $("texto.default.editorbrowse");
     appButt.addEventListener(
             'command',
-            function(e){ textoAppPicker(e, document.getElementById('texto.default.editor')); return true; },
+            function(e){ textoAppPicker(e, $('texto.default.editor')); return true; },
             true);
-    var domainButt = document.getElementById("texto.domain.editorbrowse");
+    var domainButt = $("texto.domain.editorbrowse");
     domainButt.addEventListener(
             'command', 
-            function(e){ textoAppPicker(e, document.getElementById('textoOptEditor')); return true; },
+            function(e){ textoAppPicker(e, $('textoOptEditor')); return true; },
             true);
+    for(var field in textoDomainPrefs){
+        var f = $(field);
+        if(f != null){
+            f.addEventListener(textoDomainPrefs[field].watch, function(e){ d = $('textoOptDomain').value; return saveDomainPrefs(d); }, true);
+        }
+    }
+
     initDomainListing();
     resetDomainPrefDialog();
+}
+
+function saveDomainPrefs(domain){
+    var curDomain = $("textoOptDomain").value;
+
+    // this madness is because the domain list "select" event fires
+    // before the "blur" event I use to save changes, and since "select"
+    // changes teh value of 
+    //alert('cur: ' + curDomain + ', domain: ' + domain);
+    if(curDomain == '' || ( (domain != null) && (curDomain != domain) ) ){
+        //alert('no - c:' + curDomain + ', d:' + domain);
+        return true;
+    }
+    // build the json object
+    var jsonObj = {};
+    for(var o in textoDomainPrefs){
+        var n = $(o);
+        if(n){ jsonObj[o] = n[textoDomainPrefs[o].val]; }
+    }
+    var jsonStr = JSON.stringify(jsonObj);
+    //alert("Save " + curDomain + ":\n" + jsonStr);
+
+    // save it all
+    addDomainPrefStr( curDomain, 'texto', jsonStr,
+            function(){
+                var list = $('texto.domain.list');
+                // this is brute force and ugly:
+                for(var i in list.childNodes){
+                    if(list.childNodes[i].label == curDomain){
+                        list.childNodes[i].value = jsonStr;
+                        break;
+                    }
+                }
+            });
+    return true;
 }
 
 function textoAppPicker(e, field){
@@ -190,7 +211,7 @@ function textoAppPicker(e, field){
 }
 
 function insertNewDomain(domain, value, andScroll){
-    var listbox = document.getElementById("texto.domain.list");
+    var listbox = $("texto.domain.list");
     var indent = "";
     var rdomain = urlReverse(domain);
     for(var i = 0; i < listbox.childNodes.length; i++){
@@ -214,7 +235,7 @@ function insertNewDomain(domain, value, andScroll){
 }
 
 function initDomainListing(focusEl){
-    var lb = document.getElementById('texto.domain.list');
+    var lb = $('texto.domain.list');
     if(lb == null){ return; }
     getExtensionPrefList('texto',
             function(prefList){
@@ -233,42 +254,48 @@ function initDomainListing(focusEl){
                 }
             });
     lb.addEventListener("select",
-            function(e){ var t = e.target; var n = t.childNodes[t.selectedIndex]; showDomainPrefDialog(n.label, n.value); return true; },
+            function(e){
+                var t = e.target;
+                var n = t.childNodes[t.selectedIndex];
+                // do this because the blur event on the current form isn't fired yet
+                saveDomainPrefs(null);
+                showDomainPrefDialog(n.label, n.value);
+                return true;
+            },
             true);
 }
 
 function showDomainPrefDialog(domain, jsonStr) {
     var jsonObj = JSON.parse(jsonStr);
-    document.getElementById("textoOptDomain").value = domain;
-    document.getElementById("textoOptDelete").disabled = false;
-    document.getElementById("textoOptSave").disabled = false;
-    document.getElementById("textoOptEditor").disabled = false;
-    document.getElementById("textoOptAuto").disabled = false;
-    document.getElementById("textoOptEnabled").disabled = false;
-    document.getElementById("textoOptArgs").disabled = false;
-    document.getElementById("texto.domain.editorbrowse").disabled = false;
 
-    var opts = {textoOptEditor:'value', textoOptArgs:'value', textoOptAuto:'value', textoOptEnabled:'checked'};
-    for(var i in opts){
-        var node = document.getElementById(i);
+    $('textoOptDomain').value = domain;
+    $("textoOptDelete").disabled = false;
+    $("texto.domain.editorbrowse").disabled = false;
+
+    for(var i in textoDomainPrefs){
+        var node = $(i);
+        if(node == null) continue;
+
+        node.disabled = false;
         if(typeof(jsonObj[i]) != "undefined"){
-            node[opts[i]] = jsonObj[i];
+            node[textoDomainPrefs[i].val] = jsonObj[i];
         } else {
-            node[opts[i]] = '';
+            node[textoDomainPrefs[i].val] = '';
         }
     }
-
 }
 
 function resetDomainPrefDialog(){
-    showDomainPrefDialog("", JSON.stringify({textoOptEditor:'', textoOptArgs:'', textoOptAuto:'', textoOptEnabled:false}));
-    document.getElementById("textoOptDelete").disabled = true;
-    document.getElementById("textoOptSave").disabled = true;
-    document.getElementById("textoOptEditor").disabled = true;
-    document.getElementById("textoOptAuto").disabled = true;
-    document.getElementById("textoOptEnabled").disabled = true;
-    document.getElementById("textoOptArgs").disabled = true;
-    document.getElementById("texto.domain.editorbrowse").disabled = true;
+    var obj = {}
+    for(var i in textoDomainPrefs){ obj[i] = textoDomainPrefs[i].default; }
+    showDomainPrefDialog("", JSON.stringify(obj));
+
+    for(var i in textoDomainPrefs){
+        var n = $(i);
+        if(n != null){ $(i).disabled = true; }
+    }
+    $("textoOptDelete").disabled = true;
+    $("texto.domain.editorbrowse").disabled = true;
 }
 
 
@@ -277,11 +304,6 @@ function updateTextoPref(prefBox) {
     var prefName = prefBox.id.substring('texto.'.length);
     textoSetPref(prefName, prefBox.value);
 }
-
-function changeTextoPrefs(el) {
-    texto_prefs.setCharPref("command.textarea", document.getElementById("prefTextoTextareaEditor").value);
-}
-
 
 /* 
  * Domain Database handling functions
@@ -331,20 +353,10 @@ function getExtensionPrefList(extension, callback){
 function getMergedPrefObj(domain, extension, callback){
     getDomainPrefStr(domain, extension, function(jsonStr){
         jsonObj = JSON.parse(jsonStr);
-        if(jsonObj.textoOptEnabled == null) {
-            jsonObj.textoOptEnabled = textoReadPref(textopref.enabled);
-        }
-        if(jsonObj.textoOptEditor == null || jsonObj.textoOptEditor == '') {
-            jsonObj.textoOptEditor = textoReadPref(textopref.editor);
-        }
-        if(jsonObj.textoOptArgs == null || jsonObj.textoOptArgs == '') {
-            jsonObj.textoOptArgs = textoReadPref(textopref.args);
-        }
-        if(jsonObj.textoOptExtension == null || jsonObj.textoOptExtension == '') {
-            jsonObj.textoOptExtension = textoReadPref(textopref.file_extension);
-        }
-        if(jsonObj.textoOptTmpDir == null || jsonObj.textoOptTmpDir == '') {
-            jsonObj.textoOptTmpDir = textoReadPref(textopref.tmpdir);
+        for(var f in textoDomainPrefs){
+            if(jsonObj[f] == null || jsonObj[f] == '') {
+                jsonObj[f] = textoReadPref(textoDomainPrefs[f].global);
+            }
         }
         callback(jsonObj);
     });
