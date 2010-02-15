@@ -25,6 +25,10 @@ By default, the extension is enabled on every website with a textarea tag.
 If you don't want this behavior, uncheck the **Globally Enabled** box and
 configure Texto for your sites under **Domain Specific Options**.
 
+A simple way configure most text editors for specific document types is to
+change the file extension.  Texto defaults to `txt` but you may change it to
+anything else.
+
 ## Advanced Configuration
 
 You may wish to use different editors for different sites, or possibly the same
@@ -35,14 +39,16 @@ currently selected domain.
 
 To setup a new domain, enter its name in the **Add Domain** box, click add, then
 fill out any options you want to be different from the *Global* options on the
-right and click **Save**.  Any unset options except **Enabled** will default to the
-Global setting.  If the **Enabled** option is not set for a domain, then Texto
-will not run on that domain.  Use this to exclude websites such as *google.com*
-or *facebook.com*, where Texto icons aren't useful.
+right.  Changes are saved automatically.  Any unset options except **Enabled**
+will default to the Global setting.  If the **Enabled** option is not set for a
+domain, then Texto will not run on that domain.  Use this to exclude websites
+such as *google.com* or *facebook.com*, where Texto icons aren't useful.
 
-Be sure to click **Save** after making changes.
+You can set a custom file extension for each domain.  Many text editors can key
+off the file extension for syntax highlighting, plugin loading, etc.
 
 To remove a domain's settings, click the domain, then the **Delete** button.
+
 
 ## Hidden Configuration
 
