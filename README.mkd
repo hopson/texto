@@ -56,9 +56,6 @@ There are some configuration options not available on the Preferences screen.
 You can view these by opening the URL **about:config** and entering *texto* in
 the Filter box.  Right now the configurable options are:
 
-* `texto.default.file_extension` - the file extension to use for temp files.
-  Changing this to "html" might enable your text editor's syntax highlighting,
-  for example.
 * `texto.default.tmpdir` - Directory to use for storing tmp files while being
   edited.  This should be detected correctly, but if you want to point it
   somewhere else you may.
@@ -80,7 +77,7 @@ know and I'll include it here.
 
 A Makefile is included with the source code; to build a version for yourself you'll just need `make` and `zip`.
 
-    make xpi
+> make xpi
 
 will produce the file `texto.xpi` which you can open with Firefox to install.
 
