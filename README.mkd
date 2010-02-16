@@ -75,7 +75,8 @@ know and I'll include it here.
 
 ## Building Texto ##
 
-A Makefile is included with the source code; to build a version for yourself you'll just need `make` and `zip`.
+A Makefile is included with the source code; to build a version for yourself
+you'll just need `make` and `zip`.
 
 > make xpi
 
@@ -89,6 +90,12 @@ actively maintained again, and is worth a look for folks wanting similar
 functionality.  Another great alternative is It's All Text.  If you know of
 another such extension, please let me know and I'll give it the Texto Bump
 here!
+
+### 3.2
+
+Added ability to set the file extension used by Texto's temp files, to trigger
+syntax highlighting.  Domain preferences are always saved, no more forgetting
+to click the *Save* button.
 
 ### 3.1
 
