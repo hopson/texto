@@ -93,14 +93,14 @@ here!
 
 ### 3.2beta1
 
-Added ability to set the file extension used by Texto's temp files, to trigger
-syntax highlighting.  Domain preferences are always saved, no more forgetting
-to click the *Save* button. [Texto 3.2beta2] [6]
+Fix an error in default preferences due to a bad javascript comparison.
+[Texto 3.2] [6]
 
 ### 3.2beta1
 
-Fix an error in default preferences due to a bad javascript comparison.
-[Texto 3.2] [3]
+Added ability to set the file extension used by Texto's temp files, to trigger
+syntax highlighting.  Domain preferences are always saved, no more forgetting
+to click the *Save* button. [Texto 3.2beta1] [3]
 
 ### 3.1
 
