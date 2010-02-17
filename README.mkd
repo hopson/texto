@@ -91,10 +91,10 @@ functionality.  Another great alternative is It's All Text.  If you know of
 another such extension, please let me know and I'll give it the Texto Bump
 here!
 
-### 3.2beta1
+### 3.2beta2
 
 Fix an error in default preferences due to a bad javascript comparison.
-[Texto 3.2] [6]
+[Texto 3.2beta2] [6]
 
 ### 3.2beta1
 
