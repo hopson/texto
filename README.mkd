@@ -95,7 +95,7 @@ here!
 
 Added ability to set the file extension used by Texto's temp files, to trigger
 syntax highlighting.  Domain preferences are always saved, no more forgetting
-to click the *Save* button. [Texto 3.2] [6]
+to click the *Save* button. [Texto 3.2beta2] [6]
 
 ### 3.2beta1
 
@@ -122,7 +122,7 @@ changed the name to avoid "stealing" the string Mozex on the addons site.
 [3]: http://hopson.ws/texto/texto-3.2.0.xpi "Texto 3.2"
 [4]: http://hopson.ws/texto/texto-3.1.1.xpi "Texto 3.1"
 [5]: http://hopson.ws/texto/texto-3.0.1.xpi "Texto 3.0.1"
-[5]: http://hopson.ws/texto/texto-3.2beta2.xpi "Texto 3.2beta2"
+[6]: http://hopson.ws/texto/texto-3.2beta2.xpi "Texto 3.2beta2"
 
 
 
