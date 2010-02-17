@@ -91,11 +91,16 @@ functionality.  Another great alternative is It's All Text.  If you know of
 another such extension, please let me know and I'll give it the Texto Bump
 here!
 
-### 3.2
+### 3.2beta1
 
 Added ability to set the file extension used by Texto's temp files, to trigger
 syntax highlighting.  Domain preferences are always saved, no more forgetting
-to click the *Save* button. [Texto 3.2] [3]
+to click the *Save* button. [Texto 3.2] [6]
+
+### 3.2beta1
+
+Fix an error in default preferences due to a bad javascript comparison.
+[Texto 3.2] [3]
 
 ### 3.1
 
@@ -117,6 +122,7 @@ changed the name to avoid "stealing" the string Mozex on the addons site.
 [3]: http://hopson.ws/texto/texto-3.2.0.xpi "Texto 3.2"
 [4]: http://hopson.ws/texto/texto-3.1.1.xpi "Texto 3.1"
 [5]: http://hopson.ws/texto/texto-3.0.1.xpi "Texto 3.0.1"
+[5]: http://hopson.ws/texto/texto-3.2beta2.xpi "Texto 3.2beta2"
 
 
 

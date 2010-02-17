@@ -354,7 +354,7 @@ function getMergedPrefObj(domain, extension, callback){
     getDomainPrefStr(domain, extension, function(jsonStr){
         jsonObj = JSON.parse(jsonStr);
         for(var f in textoDomainPrefs){
-            if(jsonObj[f] == null || jsonObj[f] == '') {
+            if(jsonObj[f] == null || (typeof(jsonObj[f]) == 'string' && jsonObj[f] == '') ){
                 jsonObj[f] = textoReadPref(textoDomainPrefs[f].global);
             }
         }
