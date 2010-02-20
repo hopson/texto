@@ -490,7 +490,9 @@ function texto_add_edit_button(node, prefs) {
         }
         newNode.setAttribute('texto',true);
         newNode.setAttribute('title','Click to edit');
-        newNode.setAttribute('style','display:inline-block; border:solid 1px #999; padding: 2px 4px; margin-top: 4px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + (node.clientWidth - 27) );
+        var left = node.offsetLeft + node.clientWidth - 36;
+        var top = node.offsetTop;
+        newNode.setAttribute('style','border:solid 1px #999; padding: 2px 4px; margin-top: 4px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + left + 'px; top:' + top + 'px;' );
 
         newNode.setAttribute('src','chrome://texto/content/corner.png');
         newNode.addEventListener('mouseover', function(e){  e.target.src = 'chrome://texto/content/corner-hi.png'; e.target.style.background = '#BBC'; return true; }, true);
