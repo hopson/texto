@@ -49,6 +49,13 @@ off the file extension for syntax highlighting, plugin loading, etc.
 
 To remove a domain's settings, click the domain, then the **Delete** button.
 
+## Display Configuration
+
+As of version 3.3, the preferences window also includes a Display tab.  The
+current options are:
+
+ * **Icon Position** Move Texto icon to any corner of a textarea.
+ * **Show Texto Icon** Always, or only when mousing over a textarea.
 
 ## Hidden Configuration
 
@@ -91,6 +98,11 @@ functionality.  Another great alternative is It's All Text.  If you know of
 another such extension, please let me know and I'll give it the Texto Bump
 here!
 
+### 3.3beta1
+
+Added option to place the icon in any corner of a textarea, and ability to hide
+the icon until mousing over a textarea. [Texto 3.3beta1] [7]
+
 ### 3.2beta2
 
 Fix an error in default preferences due to a bad javascript comparison.
@@ -123,6 +135,7 @@ changed the name to avoid "stealing" the string Mozex on the addons site.
 [4]: http://hopson.ws/texto/texto-3.1.1.xpi "Texto 3.1"
 [5]: http://hopson.ws/texto/texto-3.0.1.xpi "Texto 3.0.1"
 [6]: http://hopson.ws/texto/texto-3.2beta2.xpi "Texto 3.2beta2"
+[6]: http://hopson.ws/texto/texto-3.3beta1.xpi "Texto 3.3beta1"
 
 
 

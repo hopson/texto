@@ -23,6 +23,8 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
 <?xml-stylesheet href="pref-texto.css" type="text/css"?>
 <?xul-overlay href="chrome://texto/content/communicatorOverlay.xul"?>
 <?xul-overlay href="chrome://texto/content/platformPrefOverlay.xul"?>
+<?xul-overlay href="chrome://texto/content/pref-commands.xul"?>
+<?xul-overlay href="chrome://texto/content/pref-display.xul"?>
 
 
 <dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
@@ -32,102 +34,18 @@ Copyright (C) 2002 Tomas Styblo <tripie@cpan.org>
     title="&prefs_window_title;"
     >
 
-    <script type="application/x-javascript" src="chrome://texto/content/pref-texto.js"/>
 
-    <groupbox id="texto.command.defaults">
-        <caption label="&prefs_global_settings;"/>
-        <grid>
-            <columns>
-                <column />
-                <column flex="1" />
-            </columns>
-            <rows>
-                <row>
-                    <hbox align="center"><label align="right" value="&prefs_default_editor;:" /></hbox>
-                    <box><textbox id="texto.default.editor" flex="1" /><button id="texto.default.editorbrowse" label="&prefs_open_appbrowser;" /></box>
-                </row>
-                <row>
-                    <vbox>
-                        <box flex="1" align="center"><label value="&prefs_default_arguments;:" /></box>
-                        <box><description>&#160;</description></box>
-                    </vbox>
-                    <vbox>
-                        <box><textbox id="texto.default.args" flex="1" /></box>
-                        <box><spacer width="8" /><description>Placeholders: %t - &prefs_placeholder_filename;, %h - &prefs_placeholder_hostname;</description></box>
-                    </vbox>
-                </row>
-                <row><box><spacer width="1" height="10" /></box><box /></row>
-                <row>
-                    <hbox align="center"><label value="&prefs_globally_enabled_flag;:" /></hbox>
-                    <box><checkbox id="texto.default.enabled" /><spacer flex="1" /><hbox align="center"><label value="&prefs_placeholder_file_extension;" /></hbox><textbox id="texto.default.file_extension" size="8" /><spacer flex="3" /></box>
-                </row>
-            </rows>
-    </grid>
-    </groupbox>
+<tabbox id="tablist">
+    <tabs>
+        <tab label="Commands" />
+        <tab label="Display" />
+    </tabs>
+    <tabpanels>
+        <tabpanel id="commandprefs" />
+        <tabpanel id="displayprefs" />
+    </tabpanels>
+</tabbox>
 
-
-    <groupbox id="texto.commands.domainopts">
-        <caption label="&prefs_domain_settings;"/>
-
-        <grid>
-            <columns>
-                <column />
-                <column />
-            </columns>
-            <rows>
-                <row>
-                    <vbox flex="1">
-                        <box>
-                            <textbox value="&prefs_new_domain;" id="texto.domain.new" flex="15" size="18" />
-                            <button id="texto.domain.add" flex="1" label="Add" />
-                        </box>
-                        <listbox id="texto.domain.list" rows="8" sortDirection="ascending">
-                            <listitem label="&prefs_nodomains;" disabled="true" />
-                        </listbox>
-                    </vbox>
-                    <vbox flex="1">
-                        <spacer flex="1" />
-                        <grid>
-                            <columns><column /><column /></columns>
-                            <rows>
-                                <row>
-                                    <hbox align="center"><label value="&prefs_domain;" /></hbox>
-                                    <hbox align="center"><textbox readonly="true" value="&#160;" id="textoOptDomain" /></hbox>
-                                </row>
-                                <row>
-                                    <hbox align="center"><label value="&prefs_executable;" /></hbox>
-                                    <hbox><textbox id="textoOptEditor" flex="50"/><button id="texto.domain.editorbrowse" flex="1" label="&prefs_open_appbrowser;" /></hbox>
-                                </row>
-
-                                <row>
-                                    <hbox align="center"><label value="&prefs_arguments;" /></hbox><textbox id="textoOptArgs" />
-                                </row>
-                                <row>
-                                    <hbox align="center"><label value="&prefs_css_selector;" /></hbox><textbox id="textoOptAuto" />
-                                </row>
-                                <row>
-                                    <hbox align="center"><label value="&prefs_enabled;" /></hbox>
-                                    <hbox align="center" flex="1">
-                                        <checkbox id="textoOptEnabled" />
-                                        <spacer flex="1" />
-                                        <hbox align="center"><label value="&prefs_placeholder_file_extension;" /></hbox>
-                                        <textbox id="textoOptExtension" size="8" />
-                                    </hbox>
-                                </row>
-                                <row>
-                                    <hbox />
-                                    <hbox>
-                                        <button id="textoOptDelete" label="&prefs_delete;" disabled="true" />
-                                    </hbox>
-                                </row>
-                            </rows>
-                        </grid>
-                    </vbox>
-                </row>
-            </rows>
-        </grid>
-
-    </groupbox>
 
 </dialog>
 

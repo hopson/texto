@@ -35,7 +35,9 @@ var textopref = {
     editor: pref + ".editor",
     args: pref + ".args",
     file_extension: pref + ".file_extension",
-    selector: pref + ".selector"
+    selector: pref + ".selector",
+    iconpos: pref + ".iconpos",
+    iconhide: pref + ".iconhide",
 };
 
 var textoDomainPrefs = {
@@ -44,7 +46,9 @@ var textoDomainPrefs = {
     textoOptAuto: { val: 'value', watch: 'blur', default: '', global: textopref.selector},
     textoOptEnabled: { val: 'checked', watch: 'command', default: false, global: textopref.enabled },
     textoOptExtension: { val: 'value', watch: 'blur', default: '', global: textopref.file_extension },
-    textoOptTmpDir: { val: 'value', watch: 'blur', default: '', global: textopref.tmpdir }
+    textoOptTmpDir: { val: 'value', watch: 'blur', default: '', global: textopref.tmpdir },
+    textoOptIcon: { val: 'value', watch: 'command', default: 2, global: textopref.iconpos },
+    textoOptIconHide: { val: 'value', watch: 'command', default: 0, global: textopref.iconhide },
 };
 
 /* DEBUG */
@@ -141,8 +145,30 @@ function initTextoPrefPanel(defaults) {
         }
     }
 
+    // icon position
+    var iconpos = $("texto.iconpos");
+    iconpos.addEventListener(
+            'command',
+            function(e){ textoSetPref('default.iconpos', e.target.value); return true; },
+            true);
+
+    // hide icon?
+    var iconhide = $("texto.iconhide");
+    iconhide.addEventListener(
+            'command',
+            function(e){ textoSetPref('default.iconhide', e.target.value); return true; },
+            true);
+
     initDomainListing();
     resetDomainPrefDialog();
+    initDisplayPrefs();
+}
+
+function initDisplayPrefs(){
+    // select the radio button indicated by pref
+    $('texto.iconpos').selectedIndex = textoReadPref(textopref.iconpos) - 1;
+    $('texto.iconhide').selectedIndex = textoReadPref(textopref.iconhide);
+
 }
 
 function saveDomainPrefs(domain){
@@ -151,9 +177,7 @@ function saveDomainPrefs(domain){
     // this madness is because the domain list "select" event fires
     // before the "blur" event I use to save changes, and since "select"
     // changes teh value of 
-    //alert('cur: ' + curDomain + ', domain: ' + domain);
     if(curDomain == '' || ( (domain != null) && (curDomain != domain) ) ){
-        //alert('no - c:' + curDomain + ', d:' + domain);
         return true;
     }
     // build the json object
@@ -163,7 +187,6 @@ function saveDomainPrefs(domain){
         if(n){ jsonObj[o] = n[textoDomainPrefs[o].val]; }
     }
     var jsonStr = JSON.stringify(jsonObj);
-    //alert("Save " + curDomain + ":\n" + jsonStr);
 
     // save it all
     addDomainPrefStr( curDomain, 'texto', jsonStr,

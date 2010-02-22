@@ -19,6 +19,12 @@ instead of those above.
 Copyright (C) 2003 Tomas Styblo <tripie@cpan.org>
 */
 
+function textoDebug(msg) {
+  var consoleService = Components.classes["@mozilla.org/consoleservice;1"]
+                                 .getService(Components.interfaces.nsIConsoleService);
+  consoleService.logStringMessage(msg);
+}
+
 var texto_dir_separator;
 var texto_os;
 var texto_firstrun = false;
@@ -37,6 +43,7 @@ function textoInit(){
     var editor = textoReadPref(textopref.editor);
     var args = textoReadPref(textopref.args);
     var file_extension = textoReadPref(textopref.file_extension);
+    var hideicon = textoReadPref(textopref.iconhide);
 
     texto_dir_separator = '/';      /* unix */
     texto_os = 'unix';              /* unix */
@@ -59,6 +66,7 @@ function textoInit(){
     if(enabled == null){ textoSetPref(textopref.enabled, true); }
     if(args == null){ textoSetPref(textopref.args, '%t'); }
     if(file_extension == null){ textoSetPref(textopref.file_extension, 'txt'); }
+    if(hideicon == null){ textoSetPref(textopref.iconhide, 0); }
 }
 
 function textoGetPrefTmpdir() {
@@ -351,8 +359,6 @@ function textoFillTextarea(node, prefs, delFile) {
             textoError("FillTextarea No tempfile: "+tmpfile);
             return false;
         }
-        //node.removeEventListener('focus', textoUpdateTextarea, false);
-        //node.removeEventListener('click', textoHandleMouseDown, false);
     }
 
     if (node && textoExistsFile(tmpfile)) {
@@ -482,6 +488,7 @@ function texto_add_edit_button(node, prefs) {
     var sib = node.nextSibling;
     if(sib == null || sib.nodeType != Node.ELEMENT_NODE || ! sib.hasAttribute('texto')) {
         var newNode = window.content.document.createElement('img');
+        var extra_style = '';
         newNode.setAttribute('class', '-texto-button');
 
         if(!hotKeyed){
@@ -490,13 +497,58 @@ function texto_add_edit_button(node, prefs) {
         }
         newNode.setAttribute('texto',true);
         newNode.setAttribute('title','Click to edit');
-        var left = node.offsetLeft + node.clientWidth - 36;
+
+        if(prefs.textoOptIconHide == 1){
+            extra_style += 'display:none;';
+            node.addEventListener('mouseover', function(e){
+                    if(e.target.previousSibling.hasAttribute('texto') && e.target.previousSibling.style.display == 'none'){
+                        e.target.previousSibling.style.display = 'inline-block';
+                    }
+                    return true;
+            }, true);
+            node.addEventListener('mouseout', function(e){
+                    var tgt = e.target;
+                    if(e.relatedTarget.tagName == 'IMG' && e.relatedTarget.hasAttribute('texto')){ return false; }
+                    if(tgt.previousSibling.hasAttribute('texto')){
+                        tgt.previousSibling.style.display = 'none';
+                    }
+                    return true;
+
+            }, true);
+
+        }
+
+        // UL 1, UR 2, LL 3, LR 4
+        var pad = 4;
+        var pos = 4;
+        if(prefs.textoOptIcon){ pos = prefs.textoOptIcon; }
+
         var top = node.offsetTop;
-        newNode.setAttribute('style','border:solid 1px #999; padding: 2px 4px; margin-top: 4px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + left + 'px; top:' + top + 'px;' );
+        var left = node.offsetLeft;
+
+        if(pos % 2 == 0){
+            // align right
+            left += node.clientWidth - (33 + pad);
+        } else {
+            // align left
+            left += pad;
+        }
+
+        if(pos > 2){
+            // align bottom
+            top += node.offsetHeight - (31 + pad);
+        } else {
+            // align top
+            top += pad;
+        }
+        newNode.setAttribute('style','border:solid 1px #999; border-right:solid 2px #999; border-bottom:solid 2px #999; padding: 2px 4px; margin: 0px; background: #DDD; vertical-align: top; -moz-border-radius: 4px; position:absolute; left:' + left + 'px; top:' + top + 'px;' + extra_style );
 
         newNode.setAttribute('src','chrome://texto/content/corner.png');
-        newNode.addEventListener('mouseover', function(e){  e.target.src = 'chrome://texto/content/corner-hi.png'; e.target.style.background = '#BBC'; return true; }, true);
-        newNode.addEventListener('mouseout', function(e){ e.target.src = 'chrome://texto/content/corner.png'; e.target.style.background = '#DDD'; return true; }, true);
+        newNode.addEventListener('mouseover', function(e){
+                e.target.src = 'chrome://texto/content/corner-hi.png'; e.target.style.background = '#BBC'; return true; }, true);
+        newNode.addEventListener('mouseout', function(e){
+                e.target.src = 'chrome://texto/content/corner.png'; e.target.style.background = '#DDD'; return true; }, true);
+
         // Now complicated event handling stuff
         var dowhat = null;
         if(prefs.textoOptEditor) {

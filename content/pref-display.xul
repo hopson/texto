@@ -1,0 +1,50 @@
+<?xml version="1.0"?> 
+
+<!DOCTYPE overlay SYSTEM "chrome://texto/locale/pref-texto.dtd">
+<overlay id="displayprefoverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<tabpanel id="displayprefs">
+<groupbox id="texto.command.defaults" flex="1">
+<caption label="&prefs_disp_title;"/>
+<grid>
+<columns><column flex="1" /><column flex="1" /></columns>
+<rows><row><vbox flex="1">
+
+	<groupbox>
+	<caption label="&prefs_iconpos;"/>
+	<radiogroup id="texto.iconpos" style="background: #FFF;">
+		<grid>
+			<columns><column flex="1" /><column flex="1" /></columns>
+		<rows>
+		<row>
+			<radio id="texto.icon.ul" label="&prefs_iconpos_ul;" value="1" />
+			<radio dir="reverse" id="texto.icon.ur" label="&prefs_iconpos_ur;" value="2" />
+		</row>
+		<row>
+			<spacer width="8" height="20" />
+			<spacer width="8" height="20" />
+		</row>
+
+		<row>
+			<radio id="texto.icon.ll" label="&prefs_iconpos_ll;"  value="3" />
+			<radio dir="reverse" id="texto.icon.lr" label="&prefs_iconpos_lr;" value="4" />
+		</row>
+	</rows>
+	</grid>
+	</radiogroup>
+	</groupbox>
+
+</vbox>
+<vbox flex="1">
+	<groupbox>
+	<caption label="&prefs_iconshow;"/>
+	<radiogroup id="texto.iconhide">
+		<radio id="texto.iconshow.always" label="&prefs_iconshow_always;" value="0" />
+		<radio id="texto.iconshow.mouseover" label="&prefs_iconshow_mouseover;" value="1" />
+	</radiogroup>
+
+	</groupbox></vbox>
+</row></rows></grid>
+</groupbox>
+</tabpanel>
+</overlay>
