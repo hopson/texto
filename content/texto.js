@@ -44,6 +44,7 @@ function textoInit(){
     var args = textoReadPref(textopref.args);
     var file_extension = textoReadPref(textopref.file_extension);
     var hideicon = textoReadPref(textopref.iconhide);
+    var iconpos = textoReadPref(textopref.iconpos);
 
     texto_dir_separator = '/';      /* unix */
     texto_os = 'unix';              /* unix */
@@ -66,7 +67,8 @@ function textoInit(){
     if(enabled == null){ textoSetPref(textopref.enabled, true); }
     if(args == null){ textoSetPref(textopref.args, '%t'); }
     if(file_extension == null){ textoSetPref(textopref.file_extension, 'txt'); }
-    if(hideicon == null){ textoSetPref(textopref.iconhide, 0); }
+    if(hideicon == null){ textoSetPref(textopref.iconhide, "0"); }
+    if(iconpos == null){ textoSetPref(textopref.iconpos, "1"); }
 }
 
 function textoGetPrefTmpdir() {
