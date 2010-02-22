@@ -126,7 +126,7 @@ customization options, new icons, and the new name "Texto" [Texto 3.0.1] [5]
 
 ### Ancient History
 
-Older version were named "Mozex Testo" and only released on my blog/irc.  I
+Older versions were named "Mozex Testo" and only released on my blog/irc.  I
 changed the name to avoid "stealing" the string Mozex on the addons site.
 
 [1]: https://addons.mozilla.org/firefox/addon/73747 "Texto on AMO"
@@ -135,7 +135,7 @@ changed the name to avoid "stealing" the string Mozex on the addons site.
 [4]: http://hopson.ws/texto/texto-3.1.1.xpi "Texto 3.1"
 [5]: http://hopson.ws/texto/texto-3.0.1.xpi "Texto 3.0.1"
 [6]: http://hopson.ws/texto/texto-3.2beta2.xpi "Texto 3.2beta2"
-[6]: http://hopson.ws/texto/texto-3.3beta1.xpi "Texto 3.3beta1"
+[7]: http://hopson.ws/texto/texto-3.3beta1.xpi "Texto 3.3beta1"
 
 
 
