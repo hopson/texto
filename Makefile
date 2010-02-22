@@ -8,7 +8,7 @@ JAR_FILE=$(EXTENSION).jar
 
 CONTENTS=content
 
-XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/texto.xul $(CONTENTS)/textoPrefOverlay.xul $(CONTENTS)/platformPrefOverlay.xul $(CONTENTS)/pref-texto.xul
+XUL_CONTENTS=$(CONTENTS)/communicatorOverlay.xul $(CONTENTS)/texto.xul $(CONTENTS)/textoPrefOverlay.xul $(CONTENTS)/platformPrefOverlay.xul $(CONTENTS)/pref-texto.xul $(CONTENTS)/pref-commands.xul $(CONTENTS)/pref-display.xul
 JS_CONTENTS=$(CONTENTS)/md5.js $(CONTENTS)/texto.js $(CONTENTS)/pref-texto.js
 CSS_CONTENTS=$(CONTENTS)/pref-texto.css
 OTHER_CONTENTS=$(CONTENTS)/corner.png $(CONTENTS)/corner-hi.png $(CONTENTS)/icon-lg.png $(CONTENTS)/icon-lg-hi.png
